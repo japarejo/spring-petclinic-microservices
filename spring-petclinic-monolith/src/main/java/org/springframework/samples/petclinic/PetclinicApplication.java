@@ -9,10 +9,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 
 @SpringBootApplication
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 //@EnableCircuitBreaker
 //@EnableHystrixDashboard
-@EnableFeignClients(basePackages ="org.springframework.samples.petclinic.apiclients")
+//@EnableFeignClients(basePackages ="org.springframework.samples.petclinic.apiclients")
 public class PetclinicApplication {
 
 	public static void main(String[] args) {

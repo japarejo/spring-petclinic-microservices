@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(value = "bills-microservice")
+/*@FeignClient(value = "bills-microservice")
 public interface BillClient {
 	@RequestMapping(method = RequestMethod.GET,value = "/api/v1/bills") 
 	List<Bill> getBills();
-}
+}*/
