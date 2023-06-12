@@ -1,0 +1,4 @@
+org\springframework\samples\microservicechasis\restcontrollers\BadRequestException.class
+org\springframework\samples\microservicechasis\restcontrollers\ResourceNotFoundException.class
+org\springframework\samples\microservicechasis\restcontrollers\ServiceInstanceRestController.class
+org\springframework\samples\microservicechasis\MicroserviceChasisApplication.class
