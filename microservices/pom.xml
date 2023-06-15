@@ -20,5 +20,6 @@
 		<module>hexagonal-microservice-chasis</module>
 		<module>security-microservice</module>
 		<module>bills-microservice</module>
+		<module>mygateway</module>
 	</modules>
 </project>
