@@ -1,8 +1,10 @@
 package org.springframework.samples.petclinic.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.samples.petclinic.apiclients.BillClient;
 //import org.springframework.samples.petclinic.apiclients.BillClient;
 import org.springframework.samples.petclinic.model.Bill;
 import org.springframework.samples.petclinic.service.BillService;
@@ -16,8 +18,9 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class BillController {
 
-	//@Autowired
-	//BillClient billsClient;
+	
+	@Autowired
+	BillClient billsClient;
 	
 	@Autowired
 	BillService billService;
@@ -26,14 +29,14 @@ public class BillController {
 	 public ModelAndView allBillsWithRestTemplate() {
 		 
 		 ModelAndView result=new ModelAndView("bills/listing");		 
-		 result.addObject("bills",billService.getAllBills());		 
+		 //result.addObject("bills",billService.getAllBills(token));		 
 		 return result;
 	 }
 	 
 	 @GetMapping("/bills/withFeign")
 	 public ModelAndView allBillsWithFeign() {		 
 		 ModelAndView result=new ModelAndView("bills/listing");		 
-		 //result.addObject("bills",billsClient.getBills());		 
+		 result.addObject("bills",billsClient.getBills("Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbjEiLCJleHAiOjE2ODY2ODkzNTYsImlhdCI6MTY4NjY3MTM1NiwiYXV0aG9yaXRpZXMiOlsiYWRtaW4iXX0.4lfJC2Hs9yeI3DYjLPi3eK7hXiegIatdq81-CTLQDKYBAOMTsvlV__wXktRFHfjZYQgLCdeI-le29vVEoObh0g"));		 
 		 return result;
 	 }
 	 

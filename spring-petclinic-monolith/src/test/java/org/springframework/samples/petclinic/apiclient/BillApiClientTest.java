@@ -17,15 +17,15 @@ import reactor.core.scheduler.Schedulers;
 public class BillApiClientTest {
 
 	int calls=10;
-	WebClient client=WebClient.create("http://localhost:8095/api/v1");
+	WebClient client=WebClient.create("http://localhost:8040/api/v1");
 
 	@Test
 	public void testSequentialCalls() {		
-		/*List<Bill> bills=new ArrayList<Bill>();
+		List<Bill> bills=new ArrayList<Bill>();
 		RestTemplate restTemplate=new RestTemplate();		
 		String resourceUrl
-		   = "http://localhost:8095/api/v1/bills/";
-		 /*ResponseEntity<String> response
+		   = "http://localhost:8040/api/v1/bills/";
+		ResponseEntity<String> response
 		   = restTemplate.getForEntity(resourceUrl, String.class);
 				
 		List<Integer>ids=new ArrayList<Integer>();
@@ -33,18 +33,18 @@ public class BillApiClientTest {
 			ids.add(i%2+1);
 		long start=System.currentTimeMillis();
 		fetchUsersSequentially(ids).collectList().block();
-		System.out.println("Sequential execution time "+(System.currentTimeMillis()-start));*/
+		System.out.println("Sequential execution time "+(System.currentTimeMillis()-start));
 	}
 	
 	@Test
 	public void testParallelCalls() {		
-		/*List<Bill> bills;
+		List<Bill> bills;
 		
 		List<Integer>ids=new ArrayList<Integer>();
 		for(int i=0;i<calls;i++)
 			ids.add(i%2+1);
 		long start=System.currentTimeMillis();
-		fetchUsersInParallel(ids).collectList().doFinally((e)->System.out.println("Parallel execution time "+(System.currentTimeMillis()-start)));*/								
+		fetchUsersInParallel(ids).collectList().doFinally((e)->System.out.println("Parallel execution time "+(System.currentTimeMillis()-start)));								
 	}
 
 	public Mono<Bill> getBills(Integer id){
@@ -58,7 +58,7 @@ public class BillApiClientTest {
 	        .parallel()
 	        .runOn(Schedulers.boundedElastic())
 	        .flatMap(this::getBills)
-	        .ordered((u1, u2) -> u2.getId() - u1.getId());
+	        .sequential();
 	}
 	
 	public Flux<Bill> fetchUsersSequentially(List<Integer> userIds) {
