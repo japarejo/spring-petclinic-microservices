@@ -17,5 +17,7 @@
 		<!-- >module>registry</module -->
 		<module>microservice-chasis</module>
 		<module>hexagonal-microservice-chasis</module>
+		<module>security-microservice</module>
+		<module>bills-microservice</module>
 	</modules>
 </project>
