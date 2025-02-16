@@ -18,6 +18,6 @@
 		<module>microservice-chasis</module>
 		<module>hexagonal-microservice-chasis</module>
 		<module>security-microservice</module>
-		<module>bills-microservice</module>
+		<module>billsmicroservice</module>
 	</modules>
 </project>

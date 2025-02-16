@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.apiclient;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class BillApiClientTest {
 
 	int calls=10;
 	WebClient client=WebClient.create("http://localhost:8040/api/v1");
-
+	@Disabled
 	@Test
 	public void testSequentialCalls() {		
 		List<Bill> bills=new ArrayList<Bill>();
@@ -35,7 +36,7 @@ public class BillApiClientTest {
 		fetchUsersSequentially(ids).collectList().block();
 		System.out.println("Sequential execution time "+(System.currentTimeMillis()-start));
 	}
-	
+	@Disabled
 	@Test
 	public void testParallelCalls() {		
 		List<Bill> bills;
