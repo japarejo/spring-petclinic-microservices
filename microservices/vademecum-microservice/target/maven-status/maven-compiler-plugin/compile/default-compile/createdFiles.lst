@@ -1,0 +1,8 @@
+org\springframework\samples\microservicechasis\configuration\OpenApi30Config.class
+org\springframework\samples\microservicechasis\restcontrollers\BadRequestException.class
+org\springframework\samples\microservicechasis\util\JwtTokenUtil.class
+org\springframework\samples\microservicechasis\restcontrollers\ResourceNotFoundException.class
+org\springframework\samples\microservicechasis\restcontrollers\ServiceInstanceRestController.class
+org\springframework\samples\microservicechasis\configuration\SecurityConfiguration.class
+org\springframework\samples\microservicechasis\util\JwtRequestValidationFilter.class
+org\springframework\samples\microservicechasis\MicroserviceChasisApplication.class

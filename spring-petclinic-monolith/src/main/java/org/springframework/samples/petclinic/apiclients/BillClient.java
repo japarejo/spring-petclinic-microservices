@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import reactor.core.publisher.Mono;
 
 
-@FeignClient(value = "bills-microservice",url = "http://localhost:8040")
+@FeignClient(value = "bills-microservice")
 public interface BillClient {
 	@RequestMapping(method = RequestMethod.GET,value = "/api/v1/bills") 
 	List<Bill> getBills(@RequestHeader("Authorization") String token);

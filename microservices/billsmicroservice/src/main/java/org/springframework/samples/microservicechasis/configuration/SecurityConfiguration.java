@@ -39,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/**").permitAll()
 				.antMatchers("/whoami/**","/env").permitAll()
 				.antMatchers("/service-instances/*").authenticated()
-				.antMatchers("/actuator/**").authenticated()
+				.antMatchers("/actuator/**").permitAll()
 				.anyRequest().denyAll()
 			.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

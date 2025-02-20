@@ -1,5 +1,3 @@
-cd $HOME
-cd Documents
 mkdir config-repo
 cd config-repo
 git init .
