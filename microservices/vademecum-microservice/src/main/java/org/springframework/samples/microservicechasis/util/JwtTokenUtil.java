@@ -1,8 +1,10 @@
-package org.springframework.samples.securitymicroservice.util;
+package org.springframework.samples.microservicechasis.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -78,10 +80,7 @@ public class JwtTokenUtil implements Serializable {
 //   compaction of the JWT to a URL-safe string 
 
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
-		return Jwts.builder()
-				.setClaims(claims)
-				.setSubject(subject)
-				.setIssuedAt(new Date(System.currentTimeMillis()))
+		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 	}
@@ -117,6 +116,15 @@ public class JwtTokenUtil implements Serializable {
 		return doGenerateToken(
 					claims
 					,authentication.getName());
+	}
+
+	public String extractUserName(String token) {
+		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
+	}
+
+	public List<String> extractAuthorities(String token) {
+		List<String> result=(List<String>)Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().get("authorities");
+		return result;
 	}
 	
 }

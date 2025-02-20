@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.samples.petclinic.apiclients.BillClient;
 import org.springframework.samples.petclinic.model.Bill;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,6 +20,25 @@ public class BillApiClientTest {
 
 	int calls=10;
 	WebClient client=WebClient.create("http://localhost:8040/api/v1");
+	
+	@Test
+	public void RestTemplateTest() {
+		List<Bill> bills=new ArrayList<Bill>();
+		RestTemplate restTemplate=new RestTemplate();		
+		String resourceUrl
+		   = "http://localhost:8040/api/v1/bills/";
+		ResponseEntity<String> response
+		   = restTemplate.getForEntity(resourceUrl, String.class);
+		System.out.println(response.getBody());
+	}
+	
+	
+	@Test
+	public void feignTest() {
+		BillClient client;
+	}
+	
+	
 	@Disabled
 	@Test
 	public void testSequentialCalls() {		
@@ -36,6 +56,8 @@ public class BillApiClientTest {
 		fetchUsersSequentially(ids).collectList().block();
 		System.out.println("Sequential execution time "+(System.currentTimeMillis()-start));
 	}
+	
+	
 	@Disabled
 	@Test
 	public void testParallelCalls() {		

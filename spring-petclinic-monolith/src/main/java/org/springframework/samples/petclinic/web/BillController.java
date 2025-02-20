@@ -29,7 +29,7 @@ public class BillController {
 	 public ModelAndView allBillsWithRestTemplate() {
 		 
 		 ModelAndView result=new ModelAndView("bills/listing");		 
-		 //result.addObject("bills",billService.getAllBills(token));		 
+		 result.addObject("bills",billService.getAllBills());		 
 		 return result;
 	 }
 	 
