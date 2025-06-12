@@ -8,12 +8,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.samples.microservicechasis.util.JwtRequestValidationFilter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /*
@@ -26,35 +27,61 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @author japarejo
  */
 @Configuration
-@EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-	
-	@Autowired
-	JwtRequestValidationFilter filter;
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()		
-				.antMatchers("/authenticate","/","/doc","/doc/swagger-config","/swagger*","/swagger-ui/**").permitAll()
-				.antMatchers("/api/**").permitAll()
-				.antMatchers("/service-instances/*").authenticated()
-				.antMatchers("/actuator/**").authenticated()
-				.anyRequest().denyAll()
-			.and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-				.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)			
-				.csrf().disable();
-			 
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {	    
-		PasswordEncoder encoder =  NoOpPasswordEncoder.getInstance();
-	    return encoder;
-	}
-		
-	
+@EnableWebSecurity            // opcional en Boot ≥ 3, pero se mantiene por claridad
+@EnableMethodSecurity         
+public class SecurityConfiguration {
+
+    @Autowired
+    private JwtRequestValidationFilter filter;   // filtro JWT personalizado
+
+    /** Reglas de autorización, filtros adicionales, CSRF, etc. */
+    @Bean
+    SecurityFilterChain filterChain(
+            org.springframework.security.config.annotation.web.builders.HttpSecurity http)
+            throws Exception {
+
+        http
+            /*---------------------------  AUTORIZAR PETICIONES  ---------------------------*/
+            .authorizeHttpRequests(auth -> auth
+                /* rutas completamente públicas -------------------------------------------*/
+                .requestMatchers(
+                    "/authenticate",
+                    "/",
+                    "/doc",
+                    "/doc/swagger-config",
+                    "/swagger*",
+                    "/swagger-ui/**"
+                ).permitAll()
+
+                /* API REST expuesta públicamente -----------------------------------------*/
+                .requestMatchers("/api/**").permitAll()
+
+                /* rutas que exigen autenticación ------------------------------------------*/
+                .requestMatchers("/service-instances/*").authenticated()
+                .requestMatchers("/actuator/**").authenticated()
+
+                /* cualquier otra URL se deniega ------------------------------------------*/
+                .anyRequest().denyAll()
+            )
+
+            /*---------------------  SESIÓN: STATELESS (JWT)  -----------------------------*/
+            .sessionManagement(sm ->
+                sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+            /*----------------  INSERTAR FILTRO JWT ANTES DE AUTH FILTER  -----------------*/
+            .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+
+            /*--------------------------  CSRF DESHABILITADO  -----------------------------*/
+            .csrf(csrf -> csrf.disable());
+
+        return http.build();
+    }
+
+    /** Codificador de contraseñas (solo para demo / entorno controlado) */
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
 }
 
 

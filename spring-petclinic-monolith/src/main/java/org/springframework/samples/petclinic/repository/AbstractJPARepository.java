@@ -3,8 +3,8 @@ package org.springframework.samples.petclinic.repository;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 public abstract class AbstractJPARepository< T extends Serializable > {
 	 

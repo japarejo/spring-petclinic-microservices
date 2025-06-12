@@ -6,13 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+import jakarta.servlet.DispatcherType;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -24,63 +27,81 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author japarejo
  */
 @Configuration
-@EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity              // opcional; Boot lo activa si detecta spring-security
+@EnableMethodSecurity           
+public class SecurityConfiguration {
 
-	@Autowired
-	DataSource dataSource;
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.antMatchers("/resources/**","/webjars/**","/h2-console/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
-				.antMatchers("/users/new").permitAll()
-				.antMatchers("/logging", "/actuator/**").permitAll()
-				.antMatchers("/admin/**").hasAnyAuthority("admin")
-				.antMatchers("/owners/**").hasAnyAuthority("owner","admin")				
-				.antMatchers("/vets/**").authenticated()
-				.antMatchers("/payments/**").authenticated()
-				.antMatchers("/bills/**").authenticated()
-				.antMatchers("/api/**").permitAll()
-				.antMatchers("/hystrix**").permitAll()
-				.anyRequest().denyAll()
-				.and()
-				 	.formLogin()
-				 	/*.loginPage("/login")*/
-				 	.failureUrl("/login-error")
-				.and()
-					.logout()
-						.logoutSuccessUrl("/"); 
-                // Configuración para que funcione la consola de administración 
-                // de la BD H2 (deshabilitar las cabeceras de protección contra
-                // ataques de tipo csrf y habilitar los framesets si su contenido
-                // se sirve desde esta misma página.
-                http.csrf().ignoringAntMatchers("/h2-console/**","/actuator/**","/api/**");
-                http.headers().frameOptions().sameOrigin();
-	}
+    @Autowired
+    DataSource dataSource;
 
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication()
-	      .dataSource(dataSource)
-	      .usersByUsernameQuery(
-	       "select username,password,enabled "
-	        + "from users "
-	        + "where username = ?")
-	      .authoritiesByUsernameQuery(
-	       "select username, authority "
-	        + "from authorities "
-	        + "where username = ?")	      	      
-	      .passwordEncoder(passwordEncoder());	
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {	    
-		PasswordEncoder encoder =  NoOpPasswordEncoder.getInstance();
-	    return encoder;
-	}
-	
+    // 1.  AUTORIZACIÓN + FILTROS + CSRF/HEADERS ----------------------------------------
+    @Bean
+    SecurityFilterChain filterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http)
+            throws Exception {
+
+        http
+            /*---------------- AUTORIZAR PETICIONES ----------------*/
+            .authorizeHttpRequests(auth -> auth
+            	.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR)
+                    .permitAll()
+                .requestMatchers("/","/resources/**", "/webjars/**", "/h2-console/**","/welcome","/error").permitAll()
+                .requestMatchers(HttpMethod.GET, "/", "/oups").permitAll()
+                .requestMatchers("/users/new").permitAll()
+                .requestMatchers("/logging", "/actuator/**").permitAll()
+                .requestMatchers("/admin/**").hasAuthority("admin")
+                .requestMatchers("/owners/**").hasAnyAuthority("owner", "admin")
+                .requestMatchers("/vets/**", "/payments/**", "/bills/**").authenticated()
+                .requestMatchers("/api/**", "/hystrix**").permitAll()
+                .anyRequest().denyAll()
+            )
+
+            /*---------------- SESIONES ----------------
+            .sessionManagement(sm ->
+                sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )*/
+
+            /*---------------- FORM LOGIN / LOGOUT ----------------*/
+            .formLogin(form -> form                        
+                    .defaultSuccessUrl("/welcome")
+                    .permitAll())
+            .logout(logout -> logout
+                .logoutSuccessUrl("/")
+            )
+
+            /*---------------- CSRF: ignorar rutas concretas ----------------*/
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers(
+                    "/h2-console/**",
+                    "/actuator/**",
+                    "/api/**"
+                )
+            )
+
+            /*---------------- HEADERS: permitir frames en H2 console --------*/
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.sameOrigin())
+            );
+
+        return http.build();
+    }
+
+    // 2.  AUTENTICACIÓN JDBC -----------------------------------------------------------
+    @Bean
+    public UserDetailsManager users(DataSource dataSource) {
+        JdbcUserDetailsManager mgr = new JdbcUserDetailsManager(dataSource);
+        mgr.setUsersByUsernameQuery(
+            "select username, password, enabled from users where username = ?");
+        mgr.setAuthoritiesByUsernameQuery(
+            "select username, authority from authorities where username = ?");
+        return mgr;
+    }
+
+    // 3.  PASSWORD ENCODER -------------------------------------------------------------
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        //  ¡NoOp solo para entornos de demo/docencia!
+        return NoOpPasswordEncoder.getInstance();
+    }
 }
 
 

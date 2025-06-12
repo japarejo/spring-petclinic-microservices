@@ -1,8 +1,8 @@
 package org.springframework.samples.petclinic.model;
 
-import javax.persistence.Transient;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 
 import org.springframework.samples.petclinic.web.api.BaseEntityDeserializer;
 import org.springframework.samples.petclinic.web.api.BaseEntitySerializer;

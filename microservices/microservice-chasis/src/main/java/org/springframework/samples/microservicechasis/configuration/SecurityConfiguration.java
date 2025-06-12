@@ -10,11 +10,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -27,25 +28,60 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 	
 	@Autowired
 	JwtRequestValidationFilter filter;
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()		
-				.antMatchers("/authenticate","/","/doc","/doc/swagger-config","/swagger*","/swagger-ui/**").permitAll()
-				.antMatchers("/api/**").authenticated()
-				.antMatchers("/service-instances/*").authenticated()
-				.antMatchers("/actuator/**").authenticated()
-				.anyRequest().denyAll()
-			.and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-				.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)			
-				.csrf().disable();
-			 
+	@Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {		
+
+        http
+            /*------------------------------------------------------------------
+             * 1. AUTORIZACIÓN DE PETICIONES
+             *-----------------------------------------------------------------*/
+            .authorizeHttpRequests(auth -> auth
+                /*---- áreas públicas ---------------------------------------------------*/
+                .requestMatchers(
+                    "/authenticate",
+                    "/",
+                    "/doc",
+                    "/doc/swagger-config",
+                    "/swagger*",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-ui.html"
+                ).permitAll()
+
+                /*---- áreas protegidas -------------------------------------------------*/
+                .requestMatchers("/api/**").authenticated()
+                .requestMatchers("/service-instances/*").authenticated()
+                .requestMatchers("/actuator/**").authenticated()
+
+                /*---- cualquier otra ruta, denegada -----------------------------------*/
+                .anyRequest().denyAll()
+            )
+
+            /*------------------------------------------------------------------
+             * 2. POLÍTICA DE SESIÓN: STATELESS
+             *-----------------------------------------------------------------*/
+            .sessionManagement(sm ->
+                sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+
+            /*------------------------------------------------------------------
+             * 3. CADENA DE FILTROS: insertar «filter» antes de UsernamePasswordAuthenticationFilter
+             *-----------------------------------------------------------------*/
+            .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+
+            /*------------------------------------------------------------------
+             * 4. MECANISMOS DE AUTENTICACIÓN Y OTRAS CONFIGS
+             *-----------------------------------------------------------------*/
+            .httpBasic(            c -> {})   // ← active sólo si realmente lo usa
+            //.formLogin(          c -> {})   // ← comentar si es API REST pura
+            .csrf(csrf -> csrf.disable());    // para APIs sin cookie-based login
+
+        /* El método build() genera el SecurityFilterChain que Spring Boot inyectará */
+        return http.build();
 	}
 	
 	@Bean

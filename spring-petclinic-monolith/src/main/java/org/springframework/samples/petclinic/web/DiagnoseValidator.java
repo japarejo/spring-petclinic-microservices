@@ -2,9 +2,9 @@ package org.springframework.samples.petclinic.web;
 
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 
 import org.springframework.samples.petclinic.model.Diagnose;
 import org.springframework.samples.petclinic.model.PetType;

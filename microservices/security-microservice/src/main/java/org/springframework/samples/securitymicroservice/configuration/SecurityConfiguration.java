@@ -8,12 +8,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.samples.securitymicroservice.util.JwtRequestFilter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /*
@@ -26,60 +30,84 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @author japarejo
  */
 @Configuration
-@EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity                // opcional (Boot lo activa), útil para claridad
+@EnableMethodSecurity             
+public class SecurityConfiguration {
 
-	@Autowired
-	DataSource dataSource;
-	
-	@Autowired
-	JwtRequestFilter filter;
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()		
-				.antMatchers("/authenticate","/","/doc","/doc/swagger-config","/swagger*","/swagger-ui/**").permitAll()
-				.antMatchers("/api/**").authenticated()
-				.antMatchers("/service-instances/*").authenticated()
-				.antMatchers("/actuator/**").authenticated()
-				.anyRequest().denyAll()
-			.and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-				.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)			
-				.csrf().disable();
-			 
-	}
+    @Autowired
+    private DataSource dataSource;
 
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication()
-	      .dataSource(dataSource)
-	      .usersByUsernameQuery(
-	       "select username,password,enabled "
-	        + "from users "
-	        + "where username = ?")
-	      .authoritiesByUsernameQuery(
-	       "select username, authority "
-	        + "from authorities "
-	        + "where username = ?")	      	      
-	      .passwordEncoder(passwordEncoder());	
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {	    
-		PasswordEncoder encoder =  NoOpPasswordEncoder.getInstance();
-	    return encoder;
-	}
-	
-	
+    @Autowired
+    private JwtRequestFilter filter;            // filtro JWT propio
 
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-	    return super.authenticationManagerBean();
-	}
-	
+    /* ------------------------------------------------------------------
+     * 1.  CADENA DE FILTROS Y REGLAS DE AUTORIZACIÓN
+     * ---------------------------------------------------------------- */
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http
+            // ---------- reglas de autorización ----------
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/authenticate",
+                    "/",
+                    "/doc",
+                    "/doc/swagger-config",
+                    "/swagger*",
+                    "/swagger-ui/**"
+                ).permitAll()                                              // públicas
+                .requestMatchers("/api/**").authenticated()
+                .requestMatchers("/service-instances/*").authenticated()
+                .requestMatchers("/actuator/**").authenticated()
+                .anyRequest().denyAll()
+            )
+
+            // ---------- política de sesión ---------------
+            .sessionManagement(sm ->
+                sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+
+            // ---------- filtro JWT antes del de usuario/contraseña ------
+            .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+
+            // ---------- deshabilitar CSRF para API token-based ----------
+            .csrf(csrf -> csrf.disable());
+
+        return http.build();
+    }
+
+    /* ------------------------------------------------------------------
+     * 2.  USER-DETAILS SERVICE JDBC (equivale al bloque
+     *     configure(AuthenticationManagerBuilder …) de la versión vieja)
+     * ---------------------------------------------------------------- */
+    @Bean
+    UserDetailsService jdbcUserDetailsService(DataSource dataSource) {
+        JdbcUserDetailsManager uds = new JdbcUserDetailsManager(dataSource);
+        uds.setUsersByUsernameQuery(
+            "select username, password, enabled from users where username = ?");
+        uds.setAuthoritiesByUsernameQuery(
+            "select username, authority from authorities where username = ?");
+        return uds;
+    }
+
+    /* ------------------------------------------------------------------
+     * 3.  PASSWORD ENCODER  (idéntico a la versión anterior)
+     * ---------------------------------------------------------------- */
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        //  Sólo para escenarios formativos / demo.
+        return NoOpPasswordEncoder.getInstance();
+    }
+
+    /* ------------------------------------------------------------------
+     * 4.  AUTHENTICATION MANAGER  (sustituye a authenticationManagerBean())
+     * ---------------------------------------------------------------- */
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration cfg)
+            throws Exception {
+        // Spring genera el AuthenticationManager combinando el UserDetailsService
+        // anterior y el PasswordEncoder declarado.
+        return cfg.getAuthenticationManager();
+    }
 }
-
-

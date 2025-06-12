@@ -11,7 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@icon-font-path:    "../../webjars/bootstrap/fonts/";
+ @import "bootstrap/less/variables.less";
+ @import "bootstrap/less/labels.less";
+ @import "bootstrap/less/alerts.less";
+ @icon-font-path:    "../../webjars/bootstrap/fonts/";
 
 @spring-green:      #6db33f;
 @spring-dark-green: #5fa134;
@@ -177,23 +180,7 @@ table td.action-column {
   margin-bottom: 0;
 }
 
-.deployment-status-deployed {
-  .label-success;
-}
 
-.deployment-status-incomplete {
-  .label-warning;
-}
-
-.deployment-status-failed {
-  .label-danger;
-}
-
-.deployment-status-deploying {
-  .label-info
-}
-.deployment-status-na {
-}
 
 .container-details-table th {
   background-color: lighten(@spring-brown, 3%);

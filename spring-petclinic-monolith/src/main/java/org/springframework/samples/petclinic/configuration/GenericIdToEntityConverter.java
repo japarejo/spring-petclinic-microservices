@@ -3,9 +3,9 @@ package org.springframework.samples.petclinic.configuration;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Converter;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.Converter;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 
 import org.slf4j.Logger;

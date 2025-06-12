@@ -1,7 +1,7 @@
 package org.springframework.samples.petclinic.service.businessrules;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import org.springframework.samples.petclinic.model.Diagnose;
 import org.springframework.samples.petclinic.model.Disease;
