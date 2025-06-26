@@ -31,8 +31,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity         
 public class SecurityConfiguration {
 
-    @Autowired
-    private JwtRequestValidationFilter filter;   // filtro JWT personalizado
+    //@Autowired
+    //private JwtRequestValidationFilter filter;   // filtro JWT personalizado
 
     /** Reglas de autorización, filtros adicionales, CSRF, etc. */
     @Bean
@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                 ).permitAll()
 
                 /* API REST expuesta públicamente -----------------------------------------*/
+                .requestMatchers("/api/v1/bills/whoami/**","/env").permitAll()
                 .requestMatchers("/api/**").permitAll()
 
                 /* rutas que exigen autenticación ------------------------------------------*/
@@ -61,7 +62,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/actuator/**").authenticated()
 
                 /* cualquier otra URL se deniega ------------------------------------------*/
-                .anyRequest().denyAll()
+                .anyRequest().permitAll()
             )
 
             /*---------------------  SESIÓN: STATELESS (JWT)  -----------------------------*/
@@ -69,7 +70,7 @@ public class SecurityConfiguration {
                 sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             /*----------------  INSERTAR FILTRO JWT ANTES DE AUTH FILTER  -----------------*/
-            .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+            //.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
 
             /*--------------------------  CSRF DESHABILITADO  -----------------------------*/
             .csrf(csrf -> csrf.disable());

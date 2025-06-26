@@ -6,7 +6,7 @@
     <artifactId>spring-petclinic-monolith</artifactId>    
     <parent>
         <groupId>org.springframework.samples</groupId>
-        <artifactId>spring-petclinic</artifactId>
+        <artifactId>spring-petclinic-microservices</artifactId>
         <version>2.2.0.BUILD-SNAPSHOT</version>
     </parent>
     <name>spring-petclinic-monolith</name>

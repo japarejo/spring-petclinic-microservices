@@ -9,7 +9,9 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.microservicechasis.model.Bill;
 import org.springframework.samples.microservicechasis.restcontrollers.BadRequestException;
@@ -32,13 +34,24 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class BillAPIController {
 
 	BillService billService;
-	
+	@Value("${user.role}")
+    private String role;
+
+    
+    
 	
 	@Autowired
 	public BillAPIController(BillService billService) {
 		super();
 		this.billService = billService;
 	}
+	
+	@GetMapping(
+		      value = "/whoami/{username}",  
+		      produces = MediaType.TEXT_PLAIN_VALUE)
+		    public String whoami(@PathVariable("username") String username) {
+		        return String.format("Hello! You're %s and you'll become a(n) %s...\n", username, role);
+		    }
 
 	@GetMapping()
 	public List<Bill> getAllBills(HttpServletRequest request){
