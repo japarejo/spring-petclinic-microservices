@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for microservices-architecture-petclinic" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
+        </processorPath>
+        <module name="config-server" />
+        <module name="billsmicroservice" />
+        <module name="microservice-chasis" />
+        <module name="security-microservice" />
+        <module name="spring-petclinic-monolith" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="billsmicroservice" options="-parameters" />
+      <module name="config-server" options="-parameters" />
+      <module name="microservice-chasis" options="-parameters" />
+      <module name="microservices" options="-parameters" />
+      <module name="security-microservice" options="-parameters" />
+      <module name="spring-petclinic-microservices" options="-parameters" />
+      <module name="spring-petclinic-monolith" options="-parameters" />
+    </option>
+  </component>
+</project>

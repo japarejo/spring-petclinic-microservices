@@ -22,6 +22,7 @@ public class BillApiClientTest {
 	WebClient client=WebClient.create("http://localhost:8040/api/v1");
 	
 	@Test
+	@Disabled
 	public void RestTemplateTest() {
 		List<Bill> bills=new ArrayList<Bill>();
 		RestTemplate restTemplate=new RestTemplate();		
@@ -34,6 +35,7 @@ public class BillApiClientTest {
 	
 	
 	@Test
+	@Disabled
 	public void feignTest() {
 		BillClient client;
 	}

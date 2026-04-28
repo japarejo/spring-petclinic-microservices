@@ -20,6 +20,65 @@ java -jar target/*.jar
 
 You can then access petclinic here: http://localhost:8080/
 
+## REST API Documentation
+
+This repository includes a traditional Spring MVC monolith plus supporting microservices. The monolith exposes simple JSON REST APIs under `/api`, while the microservices are configured with Springdoc OpenAPI and provide live documentation.
+
+### Monolith REST API
+
+Run the monolith from the `spring-petclinic-monolith` folder:
+
+```
+cd spring-petclinic-monolith
+./mvnw spring-boot:run
+```
+
+Then use the following endpoints:
+
+- `GET /api/pets` — list all pets
+- `GET /api/pets/{id}` — retrieve a pet by ID
+- `POST /api/pets` — create a new pet
+- `PUT /api/pets/{id}` — update an existing pet
+- `DELETE /api/pets/{id}` — delete a pet
+- `GET /api/v1/visits/{id}` — retrieve a visit by ID
+
+Example:
+
+```
+curl http://localhost:8080/api/pets
+```
+
+### Microservice API documentation
+
+The microservices expose OpenAPI documentation at `/doc` and the Swagger UI at `/` when they are running.
+
+Configured service ports in this repository include:
+
+- `microservices/billsmicroservice` — port `8040`
+- `microservices/security-microservice` — port `8060`
+- `microservices/vademecum-microservice` — port `8071`
+- `microservices/microservice-chasis` — port `8071`
+- `microservices/configuration-server` — port `8888`
+
+Example requests:
+
+```
+curl http://localhost:8040/api/v1/bills
+curl http://localhost:8040/api/v1/bills/1
+curl http://localhost:8040/api/v1/bills/whoami/john
+```
+
+Each service publishes its OpenAPI JSON at `/doc` and its Swagger UI at `/`.
+
+### Microservice OpenAPI configuration
+
+The following property values enable this behavior in each microservice:
+
+- `springdoc.api-docs.path=/doc`
+- `springdoc.swagger-ui.path=/`
+
+These settings are defined in each microservice module's `src/main/resources/application.properties` file.
+
 <img width="1042" alt="petclinic-screenshot" src="https://cloud.githubusercontent.com/assets/838318/19727082/2aee6d6c-9b8e-11e6-81fe-e889a5ddfded.png">
 
 Or you can run it from Maven directly using the Spring Boot Maven plugin. If you do this it will pick up changes that you make in the project immediately (changes to Java source files require a compile as well - most people use an IDE for this):
