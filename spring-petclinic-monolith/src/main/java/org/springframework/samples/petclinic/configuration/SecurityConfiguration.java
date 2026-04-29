@@ -49,6 +49,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.GET, "/vets", "/diseases").permitAll()
                 .requestMatchers("/users/new").permitAll()
                 .requestMatchers("/logging", "/actuator/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/admin/**").hasAuthority("admin")
                 .requestMatchers("/owners/**").hasAnyAuthority("owner", "admin")
                 .requestMatchers("/vets/**", "/diseases/**", "/payments/**", "/bills/**").authenticated()

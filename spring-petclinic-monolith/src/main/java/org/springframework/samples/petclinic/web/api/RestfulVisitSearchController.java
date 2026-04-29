@@ -26,6 +26,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,6 +37,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 
 @Validated
 @Tag(name = "Visits", description = "Visit retrieval REST API")
@@ -88,7 +93,7 @@ public class RestfulVisitSearchController {
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
 			@Parameter(description = "Include visits on or before this date. ISO format: yyyy-MM-dd.", example = "2024-12-31")
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-			@Parameter(description = "Pageable parameters supported by Spring Data.", example = "page=0&size=5&sort=date,desc")
+			@ParameterObject
 			@PageableDefault(page = DEFAULT_PAGE, size = DEFAULT_SIZE, sort = "date", direction = Sort.Direction.DESC)
 			Pageable pageable,
 			@Parameter(description = "Sort as field,direction. Direction can be asc or desc.", example = "date,desc")
@@ -107,8 +112,8 @@ public class RestfulVisitSearchController {
 				fromDate,
 				toDate);
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), parseSort(sort));
-		Page<Visit> visits = visitService.search(filters.petId(), filters.ownerLastName(), filters.petName(),
-				filters.petType(), filters.description(), filters.fromDate(), filters.toDate(), pageRequest);
+		Page<Visit> visits = visitService.search(filters.getPetId(), filters.getOwnerLastName(), filters.getPetName(),
+				filters.getPetType(), filters.getDescription(), filters.getFromDate(), filters.getToDate(), pageRequest);
 
 		return toResponse(visits, filters, sort);
 	}
@@ -190,64 +195,86 @@ public class RestfulVisitSearchController {
 	}
 
 	@Schema(description = "Response wrapper for a paginated visit search.")
-	public record PagedVisitsResponse(
-			List<VisitSummary> content,
-			PageMetadata page,
-			VisitFilters filters,
-			String sort,
-			PageLinks links) {
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class PagedVisitsResponse {
+		private List<VisitSummary> content;
+		private PageMetadata page;
+		private VisitFilters filters;
+		private String sort;
+		private PageLinks links;
 	}
 
 	@Schema(description = "Filters applied to the search. Null means the filter was not used.")
-	public record VisitFilters(
-			Integer petId,
-			String ownerLastName,
-			String petName,
-			String petType,
-			String description,
-			LocalDate fromDate,
-			LocalDate toDate) {
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class VisitFilters {
+		private Integer petId;
+		private String ownerLastName;
+		private String petName;
+		private String petType;
+		private String description;
+		private LocalDate fromDate;
+		private LocalDate toDate;
 	}
 
 	@Schema(description = "Page metadata that clients can use to render pagination controls.")
-	public record PageMetadata(
-			int number,
-			int size,
-			int numberOfElements,
-			long totalElements,
-			int totalPages,
-			boolean first,
-			boolean last) {
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class PageMetadata {
+		private int number;
+		private int size;
+		private int numberOfElements;
+		private long totalElements;
+		private int totalPages;
+		private boolean first;
+		private boolean last;
 	}
 
 	@Schema(description = "Navigation links generated from the current request.")
-	public record PageLinks(
-			URI self,
-			URI first,
-			URI previous,
-			URI next,
-			URI last) {
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class PageLinks {
+		private URI self;
+		private URI first;
+		private URI previous;
+		private URI next;
+		private URI last;
 	}
 
 	@Schema(description = "Visit row returned by the API without exposing the JPA entity graph.")
-	public record VisitSummary(
-			Integer id,
-			LocalDate date,
-			String description,
-			PetSummary pet,
-			OwnerSummary owner) {
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class VisitSummary {
+		private Integer id;
+		private LocalDate date;
+		private String description;
+		private PetSummary pet;
+		private OwnerSummary owner;
 	}
 
-	public record PetSummary(
-			Integer id,
-			String name,
-			String type) {
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class PetSummary {
+		private Integer id;
+		private String name;
+		private String type;
 	}
 
-	public record OwnerSummary(
-			Integer id,
-			String firstName,
-			String lastName,
-			String fullName) {
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class OwnerSummary {
+		private Integer id;
+		private String firstName;
+		private String lastName;
+		private String fullName;
 	}
 }
+
