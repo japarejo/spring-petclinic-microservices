@@ -10,7 +10,9 @@ import jakarta.validation.constraints.Min;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
@@ -86,10 +88,9 @@ public class RestfulVisitSearchController {
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
 			@Parameter(description = "Include visits on or before this date. ISO format: yyyy-MM-dd.", example = "2024-12-31")
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-			@Parameter(description = "Zero-based page index.", example = "0")
-			@RequestParam(defaultValue = "" + DEFAULT_PAGE) @Min(0) int page,
-			@Parameter(description = "Page size. The example caps it to avoid unbounded responses.", example = "5")
-			@RequestParam(defaultValue = "" + DEFAULT_SIZE) @Min(1) @Max(MAX_SIZE) int size,
+			@Parameter(description = "Pageable parameters supported by Spring Data.", example = "page=0&size=5&sort=date,desc")
+			@PageableDefault(page = DEFAULT_PAGE, size = DEFAULT_SIZE, sort = "date", direction = Sort.Direction.DESC)
+			Pageable pageable,
 			@Parameter(description = "Sort as field,direction. Direction can be asc or desc.", example = "date,desc")
 			@RequestParam(defaultValue = "date,desc") String sort) {
 
@@ -105,7 +106,7 @@ public class RestfulVisitSearchController {
 				blankToNull(description),
 				fromDate,
 				toDate);
-		PageRequest pageRequest = PageRequest.of(page, size, parseSort(sort));
+		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), parseSort(sort));
 		Page<Visit> visits = visitService.search(filters.petId(), filters.ownerLastName(), filters.petName(),
 				filters.petType(), filters.description(), filters.fromDate(), filters.toDate(), pageRequest);
 
