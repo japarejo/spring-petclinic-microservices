@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -23,6 +24,7 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.PetRepository;
+import org.springframework.samples.petclinic.repository.PetSpecification;
 import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
 import org.springframework.stereotype.Service;
@@ -85,7 +87,25 @@ public class PetService {
 	}
 
 	public void deletePet(int id) {
-		petRepository.deleteById(id);		
+		petRepository.deleteById(id);
+	}
+
+	/**
+	 * Searches pets using the Criteria API demonstrating LEFT JOIN behaviour.
+	 *
+	 * @param petName          optional partial match on pet name
+	 * @param ownerLastName    optional partial match on owner last name
+	 * @param visitDescription optional keyword to match in visit descriptions
+	 * @param trueLeftJoin     when true uses a LEFT JOIN with an OR-null guard so
+	 *                         pets without matching visits are still returned;
+	 *                         when false the guard is omitted and the LEFT JOIN
+	 *                         behaves as an effective INNER JOIN
+	 */
+	@Transactional(readOnly = true)
+	public List<Pet> searchPetsWithVisits(String petName, String ownerLastName,
+			String visitDescription, boolean trueLeftJoin) {
+		return petRepository.findAll(
+				PetSpecification.filterPets(petName, ownerLastName, visitDescription, trueLeftJoin));
 	}
 		
 

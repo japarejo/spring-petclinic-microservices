@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.samples.petclinic.model.BaseEntity;
@@ -31,7 +32,7 @@ import org.springframework.samples.petclinic.model.PetType;
  * @author Michael Isvy
  * @since 15.1.2013
  */
-public interface PetRepository extends Repository<Pet, Integer> {
+public interface PetRepository extends Repository<Pet, Integer>, JpaSpecificationExecutor<Pet> {
 
 	/**
 	 * Retrieve all <code>PetType</code>s from the data store.

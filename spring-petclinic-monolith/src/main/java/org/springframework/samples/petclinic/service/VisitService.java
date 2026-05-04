@@ -10,14 +10,25 @@ import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.samples.petclinic.repository.VisitSpecification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
+import jakarta.validation.Valid;
 
 @Service
+@Validated
 public class VisitService {
 
 	
 	@Autowired
 	VisitRepository visitRepository;
-	
+
+	@Transactional
+	public Visit create(@Valid Visit visit) {
+		visitRepository.save(visit);
+		return visit;
+	}
+
 	public Optional<Visit> findById(int visitId){
 		return visitRepository.findById(visitId);
 	}

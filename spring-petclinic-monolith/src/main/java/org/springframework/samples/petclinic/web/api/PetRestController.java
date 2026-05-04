@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.web.api;
 
 import java.util.Collection;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.model.Pet;
@@ -64,15 +65,13 @@ public class PetRestController {
 		content = @Content(mediaType = "application/json", schema = @Schema(implementation = Pet.class)))
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Pet create(@RequestBody Pet resource) {
+	public Pet create(@RequestBody @Valid Pet resource) throws DuplicatedPetNameException{
 		if(resource == null) {
 			throw new BadRequestException();
 		} else {
-			try {
+
 				petService.savePet(resource);
-			} catch (DuplicatedPetNameException ex) {
-				throw new BadRequestException();
-			}
+
 		}
 		
 		return resource;
