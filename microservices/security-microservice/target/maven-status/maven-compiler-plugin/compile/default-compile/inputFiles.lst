@@ -1,7 +1,9 @@
 C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\restcontrollers\ResourceNotFoundException.java
+C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\util\JwtValidationResponse.java
 C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\repository\UserRepository.java
 C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\restcontrollers\JwtAuthenticationController.java
 C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\util\JwtTokenUtil.java
+C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\util\JwtTokenRequest.java
 C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\util\JwtResponse.java
 C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\model\User.java
 C:\workspace\cursos\spring-avanzado\spring-petclinic-microservices\microservices\security-microservice\src\main\java\org\springframework\samples\securitymicroservice\SecurityMicroserviceApplication.java

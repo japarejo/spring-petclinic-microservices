@@ -69,9 +69,7 @@ public class PetRestController {
 		if(resource == null) {
 			throw new BadRequestException();
 		} else {
-
 				petService.savePet(resource);
-
 		}
 		
 		return resource;

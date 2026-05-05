@@ -1,8 +1,10 @@
 package org.springframework.samples.petclinic.web.api;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,8 +13,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Optional;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +117,34 @@ class RestfulVisitControllerTests {
 				.with(csrf())
 				.with(user("api-test"))
 				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.detail").value(containsString("description:")));
+	}
+
+	@Test
+	void shouldReturnReadableDetailWhenServiceValidationFails() throws Exception {
+		Pet pet = pet(1);
+		Disease disease = disease(2);
+		Vet vet = vet(3);
+		given(petService.findPetById(1)).willReturn(pet);
+		given(diseaseService.findById(2)).willReturn(Optional.of(disease));
+		given(vetService.findById(3)).willReturn(Optional.of(vet));
+
+		Path path = mock(Path.class);
+		given(path.toString()).willReturn("create.visit.diagnose");
+		ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+		given(violation.getPropertyPath()).willReturn(path);
+		given(violation.getMessage()).willReturn("According to our vademecum such pet type cannot develop that disease");
+		given(visitService.create(any(Visit.class))).willThrow(new ConstraintViolationException(Set.of(violation)));
+
+		mockMvc.perform(post("/api/v1/visits")
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(csrf())
+				.with(user("api-test"))
+				.content(objectMapper.writeValueAsString(createRequest())))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.detail").value(
+				"create.visit.diagnose: According to our vademecum such pet type cannot develop that disease"));
 	}
 
 	private CreateVisitRequest createRequest() {

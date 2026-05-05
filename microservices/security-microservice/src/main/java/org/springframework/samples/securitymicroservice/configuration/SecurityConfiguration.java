@@ -51,6 +51,8 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/authenticate",
+                    "/validate",
+                    "/refresh",
                     "/",
                     "/doc",
                     "/doc/swagger-config",
