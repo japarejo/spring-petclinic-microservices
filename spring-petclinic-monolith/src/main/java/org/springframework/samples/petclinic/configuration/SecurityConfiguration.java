@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -28,8 +29,9 @@ import jakarta.servlet.DispatcherType;
  */
 @Configuration
 @EnableWebSecurity              // opcional; Boot lo activa si detecta spring-security
-@EnableMethodSecurity           
+@EnableMethodSecurity
 public class SecurityConfiguration {
+
 
     @Autowired
     DataSource dataSource;
@@ -102,7 +104,8 @@ public class SecurityConfiguration {
     @Bean
     PasswordEncoder passwordEncoder() {
         //  ¡NoOp solo para entornos de demo/docencia!
-        return NoOpPasswordEncoder.getInstance();
+        //return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 }
 

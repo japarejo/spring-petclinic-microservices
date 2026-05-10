@@ -5,6 +5,7 @@
     <file url="file://$PROJECT_DIR$/microservices/configuration-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/microservices/microservice-chasis/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/microservices/security-microservice/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/microservices/security-rsa-microservice/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/microservices/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/microservices/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-petclinic-monolith/src/main/java" charset="UTF-8" />

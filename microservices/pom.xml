@@ -19,6 +19,7 @@
 		<!-- module>hexagonal-microservice-chasis</module-->
 		<module>security-microservice</module>
 		<module>security-rsa-microservice</module>
+		<module>security-oauth2-microservice</module>
 		<module>billsmicroservice</module>
 		<module>configuration-server</module>
 	</modules>

@@ -38,6 +38,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1/visits")
 public class RestfulVisitController {
 
+	@Value("${}")
+	Booolean property;
+
 	VisitService visitService;
 
 	PetService petService;

@@ -2,7 +2,7 @@
 INSERT INTO users(username,password,enabled) VALUES ('admin1','4dm1n',TRUE);
 INSERT INTO authorities(id,version,username,authority) VALUES (1,1,'admin1','admin');
 -- One owner user, named owner1 with passwor 0wn3r
-INSERT INTO users(username,password,enabled) VALUES ('owner1','0wn3r',TRUE);
+INSERT INTO users(username,password,enabled) VALUES ('owner1','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',TRUE);
 INSERT INTO authorities(id,version,username,authority) VALUES (11,1,'owner1','owner');
 INSERT INTO users(username,password,enabled) VALUES ('owner2','0wn3r',TRUE);
 INSERT INTO authorities(id,version,username,authority) VALUES (2,1,'owner2','owner');
