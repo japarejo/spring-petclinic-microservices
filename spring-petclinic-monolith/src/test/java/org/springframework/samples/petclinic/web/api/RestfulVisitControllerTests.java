@@ -135,7 +135,8 @@ class RestfulVisitControllerTests {
 		ConstraintViolation<?> violation = mock(ConstraintViolation.class);
 		given(violation.getPropertyPath()).willReturn(path);
 		given(violation.getMessage()).willReturn("According to our vademecum such pet type cannot develop that disease");
-		given(visitService.create(any(Visit.class))).willThrow(new ConstraintViolationException(Set.of(violation)));
+		ConstraintViolationException validationException = new ConstraintViolationException(Set.of(violation));
+		given(visitService.create(any(Visit.class))).willThrow(validationException);
 
 		mockMvc.perform(post("/api/v1/visits")
 				.contentType(MediaType.APPLICATION_JSON)
