@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -39,7 +40,9 @@ public class SecurityConfiguration {
 								"/validate",
 								"/refresh",
 								"/oauth2/**",
+								"/login",
 								"/login/oauth2/**",
+								"/error",
 								"/",
 								"/doc",
 								"/doc/swagger-config",
@@ -51,7 +54,9 @@ public class SecurityConfiguration {
 						.requestMatchers("/service-instances/*").authenticated()
 						.requestMatchers("/actuator/**").authenticated()
 						.anyRequest().denyAll())
-				.oauth2Login(oauth2 -> oauth2.successHandler(oauth2JwtSuccessHandler))
+				.oauth2Login(oauth2 -> oauth2
+						.successHandler(oauth2JwtSuccessHandler)
+						.failureHandler(new SimpleUrlAuthenticationFailureHandler("/oauth2/providers?error")))
 				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
 				.csrf(csrf -> csrf.disable())

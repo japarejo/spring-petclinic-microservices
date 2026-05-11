@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,6 +66,16 @@ public class JwtAuthenticationController {
 	@GetMapping("/oauth2/providers")
 	public String oauth2Providers() {
 		return "OAuth2 login providers: /oauth2/authorization/google, /oauth2/authorization/github, /oauth2/authorization/azure";
+	}
+
+	@Operation(summary = "OAuth2 login success", description = "Receives the JWT generated after a successful OAuth2 login.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OAuth2 authentication succeeded",
+					content = @Content(mediaType = "application/json", schema = @Schema(implementation = JwtResponse.class)))
+	})
+	@GetMapping("/oauth2/success")
+	public ResponseEntity<JwtResponse> oauth2Success(@RequestParam String token) {
+		return ResponseEntity.ok(new JwtResponse(token));
 	}
 
 	@Operation(summary = "Validate JWT token", description = "Validates token signature, expiration and internal user existence.")

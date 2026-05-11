@@ -8,6 +8,7 @@ org\springframework\samples\securitymicroservice\util\JwtTokenRequest.class
 org\springframework\samples\securitymicroservice\repository\UserRepository.class
 org\springframework\samples\securitymicroservice\SecurityMicroserviceApplication.class
 org\springframework\samples\securitymicroservice\util\JwtValidationResponse.class
+org\springframework\samples\securitymicroservice\restcontrollers\HelloRestController.class
 org\springframework\samples\securitymicroservice\util\JwtRequestFilter.class
 org\springframework\samples\securitymicroservice\configuration\OpenApi30Config.class
 org\springframework\samples\securitymicroservice\configuration\SecurityConfiguration.class
