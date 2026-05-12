@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.securityoauth2microservice.service.InternalUserDetailsService;
 import org.springframework.samples.securityoauth2microservice.util.JwtRequest;
@@ -61,48 +60,6 @@ public class JwtAuthenticationController {
 			throws Exception {
 		Authentication authentication = authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		return ResponseEntity.ok(new JwtResponse(jwtTokenUtil.generateToken(authentication)));
-	}
-
-	@Operation(summary = "Login form", description = "HTML form that authenticates with local username and password through Spring Security form login.")
-	@GetMapping(value = "/login", produces = MediaType.TEXT_HTML_VALUE)
-	public ResponseEntity<String> loginForm(@RequestParam(required = false) String error) {
-		String errorMessage = error != null
-				? "<p class=\"error\">Invalid username or password.</p>"
-				: "";
-		return ResponseEntity.ok()
-				.contentType(MediaType.TEXT_HTML)
-				.body("""
-						<!doctype html>
-						<html lang="en">
-						<head>
-							<meta charset="utf-8">
-							<meta name="viewport" content="width=device-width, initial-scale=1">
-							<title>Petclinic Auth</title>
-							<style>
-								body { font-family: Arial, sans-serif; margin: 40px; max-width: 720px; color: #1f2937; }
-								form { display: grid; gap: 12px; max-width: 360px; margin-bottom: 24px; }
-								label { display: grid; gap: 6px; font-weight: 700; }
-								input { padding: 9px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font: inherit; }
-								button, a.button { display: inline-block; width: fit-content; padding: 9px 12px; border: 0; border-radius: 4px; background: #2563eb; color: white; text-decoration: none; font: inherit; cursor: pointer; }
-								.error { color: #b91c1c; font-weight: 700; }
-								code { background: #f1f5f9; padding: 2px 4px; border-radius: 3px; }
-							</style>
-						</head>
-						<body>
-							<h1>Petclinic Auth</h1>
-							<h2>Local user/password</h2>
-							%s
-							<form method="post" action="/login">
-								<label>Username <input name="username" autocomplete="username" value="owner1" required></label>
-								<label>Password <input name="password" type="password" autocomplete="current-password" value="0wn3r" required></label>
-								<button type="submit">Sign in with form login</button>
-							</form>
-							<h2>OAuth2</h2>
-							<p><a class="button" href="/oauth2/authorization/google">Sign in with Google</a></p>
-							<p>Both flows return a JWT response with an <code>auth_provider</code> claim.</p>
-						</body>
-						</html>
-						""".formatted(errorMessage));
 	}
 
 	@Operation(summary = "OAuth2 login entry points", description = "Start OAuth2 login with /oauth2/authorization/google, /oauth2/authorization/github or /oauth2/authorization/azure.")
