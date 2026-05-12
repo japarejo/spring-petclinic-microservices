@@ -11,54 +11,44 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.samples.securityoauth2microservice.model.InternalUser;
-import org.springframework.samples.securityoauth2microservice.service.ExternalIdentityService;
-import org.springframework.samples.securityoauth2microservice.service.InternalUserDetailsService;
-import org.springframework.samples.securityoauth2microservice.util.LoginResponse.InternalUserSummary;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.samples.securityoauth2microservice.model.InternalUser;
+import org.springframework.samples.securityoauth2microservice.repository.InternalUserRepository;
+import org.springframework.samples.securityoauth2microservice.util.LoginResponse.InternalUserSummary;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OAuth2JwtSuccessHandler implements AuthenticationSuccessHandler {
+public class LocalJwtSuccessHandler implements AuthenticationSuccessHandler {
 
-	private final ExternalIdentityService externalIdentityService;
-	private final InternalUserDetailsService userDetailsService;
+	private final InternalUserRepository userRepository;
 	private final JwtTokenUtil jwtTokenUtil;
 	private final ObjectMapper objectMapper;
 
-	public OAuth2JwtSuccessHandler(
-			ExternalIdentityService externalIdentityService,
-			InternalUserDetailsService userDetailsService,
+	public LocalJwtSuccessHandler(
+			InternalUserRepository userRepository,
 			JwtTokenUtil jwtTokenUtil,
 			ObjectMapper objectMapper) {
-		this.externalIdentityService = externalIdentityService;
-		this.userDetailsService = userDetailsService;
+		this.userRepository = userRepository;
 		this.jwtTokenUtil = jwtTokenUtil;
 		this.objectMapper = objectMapper;
 	}
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-			org.springframework.security.core.Authentication authentication) throws IOException, ServletException {
-		OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-		String provider = oauthToken.getAuthorizedClientRegistrationId();
-		InternalUser internalUser = externalIdentityService.findOrCreateUser(
-				provider,
-				oauthToken.getPrincipal());
-		UserDetails userDetails = userDetailsService.toUserDetails(internalUser);
-		Map<String, Object> providerAttributes = new LinkedHashMap<>(oauthToken.getPrincipal().getAttributes());
-		Map<String, Object> tokenClaims = tokenClaims(provider, oauthToken, internalUser, userDetails);
-		String jwt = jwtTokenUtil.generateToken(userDetails, tokenClaims);
+			Authentication authentication) throws IOException, ServletException {
+		InternalUser internalUser = userRepository.findByUsername(authentication.getName())
+				.orElseThrow(() -> new IllegalStateException("Authenticated user not found: " + authentication.getName()));
+		Map<String, Object> tokenClaims = tokenClaims(authentication, internalUser);
+		String jwt = jwtTokenUtil.generateToken(authentication, tokenClaims);
 
 		LoginResponse body = new LoginResponse(
 				jwt,
-				provider,
+				"local",
 				internalUserSummary(internalUser),
 				tokenClaims,
-				providerAttributes);
+				providerAttributes(request));
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setCharacterEncoding("UTF-8");
@@ -66,18 +56,14 @@ public class OAuth2JwtSuccessHandler implements AuthenticationSuccessHandler {
 		objectMapper.writeValue(response.getWriter(), body);
 	}
 
-	private Map<String, Object> tokenClaims(
-			String provider,
-			OAuth2AuthenticationToken oauthToken,
-			InternalUser internalUser,
-			UserDetails userDetails) {
+	private Map<String, Object> tokenClaims(Authentication authentication, InternalUser internalUser) {
 		Map<String, Object> claims = new LinkedHashMap<>();
-		claims.put("auth_provider", provider);
-		claims.put("provider_user_id", oauthToken.getPrincipal().getName());
+		claims.put("auth_provider", "local");
+		claims.put("login_method", "form");
 		putIfPresent(claims, "email", internalUser.getEmail());
 		putIfPresent(claims, "display_name", internalUser.getDisplayName());
 		claims.put("authorities",
-				userDetails.getAuthorities().stream().map(authority -> authority.getAuthority()).toList());
+				authentication.getAuthorities().stream().map(authority -> authority.getAuthority()).toList());
 		return claims;
 	}
 
@@ -91,6 +77,13 @@ public class OAuth2JwtSuccessHandler implements AuthenticationSuccessHandler {
 				internalUser.getEmail(),
 				internalUser.getDisplayName(),
 				authorities);
+	}
+
+	private Map<String, Object> providerAttributes(HttpServletRequest request) {
+		Map<String, Object> attributes = new LinkedHashMap<>();
+		attributes.put("username", request.getParameter("username"));
+		attributes.put("password", "[PROTECTED]");
+		return attributes;
 	}
 
 	private void putIfPresent(Map<String, Object> claims, String key, String value) {

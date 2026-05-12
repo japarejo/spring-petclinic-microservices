@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.samples.securityoauth2microservice.service.InternalUserDetailsService;
 import org.springframework.samples.securityoauth2microservice.util.JwtRequestFilter;
+import org.springframework.samples.securityoauth2microservice.util.LocalJwtSuccessHandler;
 import org.springframework.samples.securityoauth2microservice.util.OAuth2JwtSuccessHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -25,10 +26,15 @@ public class SecurityConfiguration {
 
 	private final JwtRequestFilter jwtRequestFilter;
 	private final OAuth2JwtSuccessHandler oauth2JwtSuccessHandler;
+	private final LocalJwtSuccessHandler localJwtSuccessHandler;
 
-	public SecurityConfiguration(JwtRequestFilter jwtRequestFilter, OAuth2JwtSuccessHandler oauth2JwtSuccessHandler) {
+	public SecurityConfiguration(
+			JwtRequestFilter jwtRequestFilter,
+			OAuth2JwtSuccessHandler oauth2JwtSuccessHandler,
+			LocalJwtSuccessHandler localJwtSuccessHandler) {
 		this.jwtRequestFilter = jwtRequestFilter;
 		this.oauth2JwtSuccessHandler = oauth2JwtSuccessHandler;
+		this.localJwtSuccessHandler = localJwtSuccessHandler;
 	}
 
 	@Bean
@@ -55,8 +61,14 @@ public class SecurityConfiguration {
 						.requestMatchers("/actuator/**").authenticated()
 						.anyRequest().denyAll())
 				.oauth2Login(oauth2 -> oauth2
+						.loginPage("/login")
 						.successHandler(oauth2JwtSuccessHandler)
 						.failureHandler(new SimpleUrlAuthenticationFailureHandler("/oauth2/providers?error")))
+				.formLogin(form -> form
+						.loginPage("/login")
+						.successHandler(localJwtSuccessHandler)
+						.failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error"))
+						.permitAll())
 				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
 				.csrf(csrf -> csrf.disable())

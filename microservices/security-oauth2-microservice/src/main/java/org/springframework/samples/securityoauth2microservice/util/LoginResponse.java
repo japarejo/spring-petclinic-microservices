@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class OAuth2LoginResponse implements Serializable {
+public class LoginResponse implements Serializable {
 
 	private static final long serialVersionUID = -9024853217925301432L;
 
@@ -15,7 +15,7 @@ public class OAuth2LoginResponse implements Serializable {
 	private final Map<String, Object> tokenClaims;
 	private final Map<String, Object> providerAttributes;
 
-	public OAuth2LoginResponse(
+	public LoginResponse(
 			String token,
 			String provider,
 			InternalUserSummary internalUser,
