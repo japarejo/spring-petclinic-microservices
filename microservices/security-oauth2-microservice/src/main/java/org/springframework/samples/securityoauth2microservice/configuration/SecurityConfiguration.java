@@ -6,6 +6,8 @@ import org.springframework.samples.securityoauth2microservice.service.InternalUs
 import org.springframework.samples.securityoauth2microservice.util.JwtRequestFilter;
 import org.springframework.samples.securityoauth2microservice.util.LocalJwtSuccessHandler;
 import org.springframework.samples.securityoauth2microservice.util.OAuth2JwtSuccessHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -91,4 +93,14 @@ public class SecurityConfiguration {
 	PasswordEncoder passwordEncoder() {
 		return NoOpPasswordEncoder.getInstance();
 	}
+
+	@Bean
+	public RoleHierarchy roleHierarchy() {
+		RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+		String hierarchy = "ROLE_ADMIN > ROLE_STAFF \n ROLE_STAFF > ROLE_USER";
+		roleHierarchy.setHierarchy(hierarchy);
+		return roleHierarchy;
+	}
+
+
 }
