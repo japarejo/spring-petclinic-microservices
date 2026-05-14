@@ -26,3 +26,4 @@ replay_pid*
 
 # Local OAuth2 credentials helper. It asks for provider secrets and must stay local.
 register-oauth2-credentials.bat
+.idea/compiler.xml

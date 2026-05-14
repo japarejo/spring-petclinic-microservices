@@ -58,12 +58,14 @@ public class SecurityConfiguration {
 				User.withUsername("bruno").password("{noop}demo").roles("VET").build(),
 				User.withUsername("carla").password("{noop}demo").roles("ASSISTANT").build(),
 				User.withUsername("admin").password("{noop}admin").roles("ADMIN").build());
+
 	}
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
+
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
+		}
 
 	@Bean
 	MethodSecurityExpressionHandler methodSecurityExpressionHandler(PermissionEvaluator permissionEvaluator) {

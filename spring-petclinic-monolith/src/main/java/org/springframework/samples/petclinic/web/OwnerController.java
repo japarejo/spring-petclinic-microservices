@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.web;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -139,11 +140,11 @@ public class OwnerController {
 	 * @return a ModelMap with the model attributes for the view
 	 */
 	@GetMapping("/owners/{ownerId}")
-	public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
+	public ModelAndView showOwner(@PathVariable("ownerId") int ownerId, Principal principal) {
 		ModelAndView mav = new ModelAndView("owners/ownerDetails");
-		Owner owner=this.ownerService.findOwnerById(ownerId);
+		Owner owner=this.ownerService.findOwnerById(ownerId,principal);
 		mav.addObject("owner",owner);
-		if(diagnoseService!=null)
+		if(diagnoseService!=null && owner!=null)
 			mav.addObject("diagnoses",this.diagnoseService.findByPets(owner.getPets()));
 		else
 			mav.addObject("diagnoses",new HashMap<Visit,Diagnose>());

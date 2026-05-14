@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.service;
 
+import java.security.Principal;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,12 @@ public class OwnerService {
 	public OwnerService(OwnerRepository ownerRepository) {
 		this.ownerRepository = ownerRepository;
 	}	
+
+	@Transactional(readOnly = true)
+	public Owner findOwnerById(int id, Principal p) throws DataAccessException {
+		Owner current=ownerRepository.findByUserName(p.getName());
+		return current.getId()==id?ownerRepository.findById(id):null;
+	}
 
 	@Transactional(readOnly = true)
 	public Owner findOwnerById(int id) throws DataAccessException {

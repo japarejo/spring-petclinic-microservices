@@ -65,7 +65,7 @@ public class SecurityConfiguration {
 				.oauth2Login(oauth2 -> oauth2
 						.loginPage("/login")
 						.successHandler(oauth2JwtSuccessHandler)
-						.failureHandler(new SimpleUrlAuthenticationFailureHandler("/oauth2/providers?error")))
+						.failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error")))
 				.formLogin(form -> form
 						.loginPage("/login")
 						.successHandler(localJwtSuccessHandler)
