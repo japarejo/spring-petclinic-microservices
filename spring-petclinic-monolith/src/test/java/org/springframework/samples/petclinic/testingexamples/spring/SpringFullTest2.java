@@ -7,7 +7,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 
 @DirtiesContext
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SpringFullTest2 {
     @Test
     public void springContextUpTest(){
