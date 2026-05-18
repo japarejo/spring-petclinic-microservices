@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @DisplayName("@DataJpaTest: slice de repositorios JPA")
@@ -33,6 +34,7 @@ class OwnerRepositoryJpaSliceTests {
 	}
 
 	@Test
+	@Transactional
 	@DisplayName("Cada test es transaccional y se revierte al terminar")
 	void shouldSaveOwnerOnlyInsideThisTestTransaction() {
 		Owner owner = new Owner();

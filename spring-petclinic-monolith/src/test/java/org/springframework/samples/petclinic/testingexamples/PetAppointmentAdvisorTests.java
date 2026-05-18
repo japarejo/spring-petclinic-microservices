@@ -120,4 +120,12 @@ class PetAppointmentAdvisorTests {
 		assertThat(this.weekdayAdvisor.classify("Taco", 0, "primer chequeo")).isEqualTo(AppointmentType.SAME_DAY);
 	}
 
+	@Test
+	@DisplayName("Ejemplo de ejeución con datos inválidos y nombre de mascota vacío")
+	void executeWithBlankPetName()
+	{
+		assertThatThrownBy(() -> this.weekdayAdvisor.classify("",5,"prueba rutinaria"))
+				.isInstanceOf(IllegalArgumentException.class);
+	}
+
 }

@@ -26,34 +26,46 @@ class ValidatorTests {
 	}
 
 	@Test
-	void shouldNotValidateWhenFirstNameEmpty() {
-
+	void shouldNotValidateWhenSomethingIsEmpty() {
+		// ARRANGEMENT:
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Person person = new Person();
 		person.setFirstName("");
 		person.setLastName("smith");
-
 		Validator validator = createValidator();
+		// ACT:
 		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(person);
-
+		// ASSERTIONs:
 		assertThat(constraintViolations.size()).isEqualTo(1);
 		ConstraintViolation<Person> violation = constraintViolations.iterator().next();
 		assertThat(violation.getPropertyPath().toString()).isEqualTo("firstName");
 		assertThat(violation.getMessage()).isEqualTo("must not be empty");
+
+		// ARRANGEMENT:
+		person.setFirstName("Manueeeeeee!!!");
+		person.setLastName("");
+		// ACT:
+		constraintViolations = validator.validate(person);
+		// ASSERTIONs:
+		assertThat(constraintViolations.size()).isEqualTo(1);
+		violation = constraintViolations.iterator().next();
+		assertThat(violation.getPropertyPath().toString()).isEqualTo("lastName");
+		assertThat(violation.getMessage()).isEqualTo("must not be empty");
+
 	}
 
 
 	@Test
 	void pruebaDeValidador(){
+		// ARRANGEMENT:
 		Person japarejo=new Person();
 		japarejo.setFirstName("José Antonio");
 		japarejo.setLastName("Parejo Maestre");
-
 		Validator validator = createValidator();
+		// ACT:
 		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(japarejo);
-
+		// ASSERTIONs:
 		Assertions.assertTrue(constraintViolations.isEmpty());
-
 	}
 
 }
