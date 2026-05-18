@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
@@ -70,6 +72,7 @@ class OwnerControllerTests {
 		george.setCity("Madison");
 		george.setTelephone("6085551023");
 		given(this.clinicService.findOwnerById(TEST_OWNER_ID)).willReturn(george);
+		given(this.clinicService.findOwnerById(eq(TEST_OWNER_ID), any())).willReturn(george);
 
 	}
 

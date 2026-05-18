@@ -10,8 +10,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -93,6 +95,40 @@ class RestfulVisitControllerTests {
 		org.assertj.core.api.Assertions.assertThat(visit.getDiagnose().getDisease()).isSameAs(disease);
 		org.assertj.core.api.Assertions.assertThat(visit.getDiagnose().getVet()).isSameAs(vet);
 		org.assertj.core.api.Assertions.assertThat(visit.getDiagnose().getVisit()).isSameAs(visit);
+	}
+
+	@Test
+	void shouldReturnCreatedVisitJsonContent() throws Exception {
+		Pet pet = pet(1);
+		Disease disease = disease(2);
+		Vet vet = vet(3);
+		CreateVisitRequest request = createRequest();
+		request.setDate(LocalDate.of(2026, 5, 18));
+		given(petService.findPetById(1)).willReturn(pet);
+		given(diseaseService.findById(2)).willReturn(Optional.of(disease));
+		given(vetService.findById(3)).willReturn(Optional.of(vet));
+		given(visitService.create(any(Visit.class))).willAnswer(invocation -> {
+			Visit visit = invocation.getArgument(0);
+			visit.setId(5);
+			visit.getDiagnose().setId(6);
+			return visit;
+		});
+
+		mockMvc.perform(post("/api/v1/visits")
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(csrf())
+				.with(user("api-test"))
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isCreated())
+			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.id").value(5))
+			.andExpect(jsonPath("$.date").value("2026-05-18"))
+			.andExpect(jsonPath("$.description").value("Routine check with mild respiratory symptoms"))
+			.andExpect(jsonPath("$.petId").value(1))
+			.andExpect(jsonPath("$.diagnosis.id").value(6))
+			.andExpect(jsonPath("$.diagnosis.description").value("Persistent coughing and respiratory inflammation"))
+			.andExpect(jsonPath("$.diagnosis.diseaseId").value(2))
+			.andExpect(jsonPath("$.diagnosis.vetId").value(3));
 	}
 
 	@Test

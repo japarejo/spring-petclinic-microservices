@@ -8,6 +8,7 @@ import java.util.Set;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -39,6 +40,20 @@ class ValidatorTests {
 		ConstraintViolation<Person> violation = constraintViolations.iterator().next();
 		assertThat(violation.getPropertyPath().toString()).isEqualTo("firstName");
 		assertThat(violation.getMessage()).isEqualTo("must not be empty");
+	}
+
+
+	@Test
+	void pruebaDeValidador(){
+		Person japarejo=new Person();
+		japarejo.setFirstName("José Antonio");
+		japarejo.setLastName("Parejo Maestre");
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(japarejo);
+
+		Assertions.assertTrue(constraintViolations.isEmpty());
+
 	}
 
 }

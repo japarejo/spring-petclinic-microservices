@@ -54,6 +54,7 @@ public class DataInitializer implements ApplicationRunner {
 			grant(luna, "bruno", BasePermission.READ);
 			grant(luna, "ROLE_ASSISTANT", BasePermission.READ, false);
 			grant(max, "ROLE_ASSISTANT", BasePermission.READ, false);
+			grant(luna,"japarejo",BasePermission.READ);
 		}
 		finally {
 			SecurityContextHolder.clearContext();

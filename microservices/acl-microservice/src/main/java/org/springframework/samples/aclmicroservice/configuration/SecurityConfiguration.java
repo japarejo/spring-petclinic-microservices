@@ -57,6 +57,7 @@ public class SecurityConfiguration {
 				User.withUsername("ana").password("{noop}demo").roles("VET").build(),
 				User.withUsername("bruno").password("{noop}demo").roles("VET").build(),
 				User.withUsername("carla").password("{noop}demo").roles("ASSISTANT").build(),
+				User.withUsername("japarejo").password("{noop}prueba").roles("VET").build(),
 				User.withUsername("admin").password("{noop}admin").roles("ADMIN").build());
 
 	}
