@@ -25,6 +25,7 @@ import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.web.OwnerController;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = OwnerController.class,
@@ -36,13 +37,13 @@ class OwnerControllerMvcSliceTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@MockBean
+	@MockitoBean
 	private OwnerService ownerService;
 
-	@MockBean
+	@MockitoBean
 	private UserService userService;
 
-	@MockBean
+	@MockitoBean
 	private AuthoritiesService authoritiesService;
 
 	@Test
