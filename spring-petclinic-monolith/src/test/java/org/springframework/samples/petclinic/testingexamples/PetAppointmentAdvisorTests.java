@@ -9,16 +9,9 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.samples.petclinic.testingexamples.PetAppointmentAdvisor.AppointmentType;
@@ -70,11 +63,7 @@ class PetAppointmentAdvisorTests {
 	}
 
 	@ParameterizedTest(name = "{index}: {0}, {1} anios y sintoma \"{2}\" -> {3}")
-	@CsvSource({
-			"Luna, 3, revision anual, ROUTINE_CHECKUP",
-			"Rocky, 12, come menos desde ayer, SAME_DAY",
-			"Milo, 2, tiene convulsiones, EMERGENCY"
-	})
+	@CsvFileSource(resources = "/testingexamples/appointment-classification-scenarios.csv", numLinesToSkip = 1)
 	@DisplayName("Clasificacion parametrizada de citas")
 	void shouldClassifyDifferentAppointmentScenarios(String petName, int age, String symptom,
 			AppointmentType expectedType) {
@@ -126,6 +115,18 @@ class PetAppointmentAdvisorTests {
 	{
 		assertThatThrownBy(() -> this.weekdayAdvisor.classify("",5,"prueba rutinaria"))
 				.isInstanceOf(IllegalArgumentException.class);
+	}
+
+
+	@DisplayName("Si la mascota tiene 10 años o más y la descripción de los sintomas contiene no come, debe darsele cita el mismo dia")
+	@CsvFileSource(resources = "/testingexamples/old-pet-eating-scenarios.csv", numLinesToSkip = 1)
+	@ParameterizedTest
+	void oldPetThatDoestNotEatGetSameDay(String petName, int edad, String sintomas, String resultAsString){
+		AppointmentType expectedResult = AppointmentType.valueOf(resultAsString);
+		// ACT
+		AppointmentType result = this.weekdayAdvisor.classify(petName,edad,sintomas);
+		// ASSERTION
+		Assertions.assertEquals(result, expectedResult);
 	}
 
 }

@@ -15,6 +15,8 @@ public class PetAppointmentAdvisor {
 
 	private final Clock clock;
 
+	private final String DOES_NOT_EAT ="no come";
+
 	public PetAppointmentAdvisor(Clock clock) {
 		this.clock = clock;
 	}
@@ -29,10 +31,17 @@ public class PetAppointmentAdvisor {
 		if (containsEmergencyKeyword(symptom)) {
 			return AppointmentType.EMERGENCY;
 		}
+		if (age >= 10 && containsDoesNotEatKeyword(symptom)) {
+			return AppointmentType.SAME_DAY;
+		}
 		if (age >= 12 || isWeekend()) {
 			return AppointmentType.SAME_DAY;
 		}
 		return AppointmentType.ROUTINE_CHECKUP;
+	}
+
+	public boolean containsDoesNotEatKeyword(String symptom){
+		return symptom.contains(DOES_NOT_EAT);
 	}
 
 	public String friendlySummary(String petName, int age, String symptom) {

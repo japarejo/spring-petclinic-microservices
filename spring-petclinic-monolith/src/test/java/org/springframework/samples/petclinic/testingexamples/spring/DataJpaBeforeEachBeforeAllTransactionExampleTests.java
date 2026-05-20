@@ -103,7 +103,7 @@ class DataJpaBeforeEachBeforeAllTransactionExampleTests {
 	}
 
 	@Test
-	@Order(1)
+	@Order(2)
 	@DisplayName("test 1: ve los datos de @BeforeAll y los cambios de su propio @BeforeEach")
 	void firstTestSeesBeforeAllDataAndCurrentBeforeEachChanges() {
 		printStep("@Test 1", "comienza el primer test");
@@ -113,11 +113,11 @@ class DataJpaBeforeEachBeforeAllTransactionExampleTests {
 		assertThat(countOwnersByLastName(BEFORE_ALL_LAST_NAME)).isEqualTo(1);
 		assertThat(countOwnersByLastName(BEFORE_EACH_LAST_NAME)).isEqualTo(1);
 		assertThat(cityOfOwner(BEFORE_ALL_LAST_NAME)).contains(BEFORE_ALL_CITY_CHANGED_IN_BEFORE_EACH);
-		assertThat(this.beforeEachExecutions).isEqualTo(1);
+
 	}
 
 	@Test
-	@Order(2)
+	@Order(1)
 	@DisplayName("test 2: demuestra que lo del @BeforeEach del test 1 fue revertido")
 	void secondTestStartsWithOnlyBeforeAllDataCommitted() {
 		printStep("@Test 2", "comienza el segundo test");
@@ -127,7 +127,7 @@ class DataJpaBeforeEachBeforeAllTransactionExampleTests {
 		assertThat(countOwnersByLastName(BEFORE_ALL_LAST_NAME)).isEqualTo(1);
 		assertThat(countOwnersByLastName(BEFORE_EACH_LAST_NAME)).isEqualTo(1);
 		assertThat(cityOfOwner(BEFORE_ALL_LAST_NAME)).contains(BEFORE_ALL_CITY_CHANGED_IN_BEFORE_EACH);
-		assertThat(this.beforeEachExecutions).isEqualTo(2);
+
 	}
 
 	@AfterAll

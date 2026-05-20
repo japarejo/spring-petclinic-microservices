@@ -74,10 +74,10 @@ import org.springframework.transaction.annotation.Transactional;
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 @Import(ValidationAutoConfiguration.class)
 class PetServiceTests {        
-        @Autowired
+	@Autowired
 	protected PetService petService;
         
-        @Autowired
+    @Autowired
 	protected OwnerService ownerService;	
 
 	@Test
