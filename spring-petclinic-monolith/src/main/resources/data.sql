@@ -84,9 +84,9 @@ INSERT INTO visits(id,version,pet_id,visit_date,description) VALUES (4,1, 7, '20
 INSERT INTO diseases(id,version,name,description) VALUES (1,1,'COVID-19','Es una ‎enfermedad infecciosacausada por un ‎coronavirus recientemente. ‎De acuerdo a los Centros para el Control y la Prevención de Enfermedades de los Estados Unidos, algunas mascotas — incluyendo perros y gatos — también se han infectado con el virus que causa la COVID-19. ‎Sin embargo, en base a la información limitada que existe, se considera poco el riesgo de que los animales trasmitan la COVID-19 a la gente.');
 INSERT INTO diseases(id,version,name,description) VALUES (2,1,'Diabetes','La diabetes en perros es una enfermedad compleja causada por la falta de insulina o la respuesta inadecuada de esta. Cuando la mascota come, su sistema digestivo rompe los alimentos en varios componentes, incluyendo la glucosa, que es transportada a las células por la insulina, una hormona que segrega el páncreas. Cuando el animal no produce insulina o no puede utilizarla con normalidad, sus niveles de azúcar en sangre se elevan. El resultado es la hiperglucemia que si no se trata puede causar complicaciones.');
 
-INSERT INTO DISEASES_PET_TYPESWITH_PREVALENCE(DISEASE_ID,PET_TYPESWITH_PREVALENCE_ID) VALUES (2,1);
-INSERT INTO DISEASES_PET_TYPESWITH_PREVALENCE(DISEASE_ID,PET_TYPESWITH_PREVALENCE_ID) VALUES (2,2);
-INSERT INTO DISEASES_PET_TYPESWITH_PREVALENCE(DISEASE_ID,PET_TYPESWITH_PREVALENCE_ID) VALUES (1,2);
+INSERT INTO diseases_pet_typeswith_prevalence(DISEASE_ID,PET_TYPESWITH_PREVALENCE_ID) VALUES (2,1);
+INSERT INTO diseases_pet_typeswith_prevalence(DISEASE_ID,PET_TYPESWITH_PREVALENCE_ID) VALUES (2,2);
+INSERT INTO diseases_pet_typeswith_prevalence(DISEASE_ID,PET_TYPESWITH_PREVALENCE_ID) VALUES (1,2);
 
 INSERT INTO diagnoses(id,version,visit_id,disease_id,vet_id,description) VALUES (1,1,1,2,2,'La mascota presenta problemas de vista y comportamiento extraño. El dueño afirma alimentarlo regularmente con dulces y chucherías :-S.');
 INSERT INTO diagnoses(id,version,visit_id,disease_id,vet_id,description) VALUES (2,1,2,1,1,'La mascota presenta fiebre, pérdida de apetito, y dificultad respiratoria.');

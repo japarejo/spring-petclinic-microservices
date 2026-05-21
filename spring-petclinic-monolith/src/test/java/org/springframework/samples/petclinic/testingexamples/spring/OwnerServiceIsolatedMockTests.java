@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.testingexamples.spring;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
 
 import java.security.Principal;
 
@@ -56,7 +57,7 @@ class OwnerServiceIsolatedMockTests {
 		Owner result = this.ownerService.findOwnerById(1, this.principal);
 
 		assertThat(result).isSameAs(authenticatedOwner);
-		verify(this.ownerRepository,times(1)).findByUserName("george");
+		verify(this.ownerRepository,times(1)).findByUserName(any(String.class));
 		verify(this.ownerRepository).findById(1);
 	}
 

@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+
 import org.springframework.http.MediaType;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
@@ -21,32 +22,35 @@ import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(PetVisitSearchController.class)
-@WithMockUser
+@WithMockUser()
 class PetVisitSearchControllerMockMvcTests {
 
 	@Autowired
 	MockMvc mockMvc;
 
-	@MockBean
+	@MockitoBean
 	PetService petService;
 
 	@Test
 	void shouldReturnPetsWithLeftJoinExplanation() throws Exception {
+		// ARRANGEMENT:
 		Pet petWithMatchingVisit = pet(1, "Leo", "cat", "George Franklin",
 				visit(11, LocalDate.of(2026, 2, 1), "annual rabies shot"));
 		Pet petWithoutMatchingVisit = pet(2, "Molly", "dog", "Helen Franklin",
 				visit(12, LocalDate.of(2026, 3, 1), "dental cleaning"));
 		given(petService.searchPetsWithVisits(eq(null), eq("Franklin"), eq("rabies"), eq(true)))
 			.willReturn(List.of(petWithMatchingVisit, petWithoutMatchingVisit));
-
+		// ACT:
 		mockMvc.perform(get("/api/v2/pets")
 				.param("ownerLastName", "Franklin")
 				.param("visitDescription", "rabies")
 				.param("joinMode", "left")
 				.accept(MediaType.APPLICATION_JSON))
+		// ASSERTION:
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.joinMode").value("left"))
 			.andExpect(jsonPath("$.visitDescriptionFilter").value("rabies"))
@@ -56,7 +60,7 @@ class PetVisitSearchControllerMockMvcTests {
 			.andExpect(jsonPath("$.pets[0].petName").value("Leo"))
 			.andExpect(jsonPath("$.pets[0].ownerFullName").value("George Franklin"))
 			.andExpect(jsonPath("$.pets[0].hasMatchingVisit").value(true))
-			.andExpect(jsonPath("$.pets[0].visits[0].description").value("annual rabies shot"))
+			.andExpect(jsonPath("$.pets[0].visits[0].description").value("annual rabies shot"	))
 			.andExpect(jsonPath("$.pets[1].petName").value("Molly"))
 			.andExpect(jsonPath("$.pets[1].hasMatchingVisit").value(false));
 

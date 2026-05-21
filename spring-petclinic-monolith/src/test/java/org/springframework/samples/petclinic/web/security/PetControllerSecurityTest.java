@@ -42,15 +42,16 @@ public class PetControllerSecurityTest {
 	@WithMockUser(username ="SomeRandomVet",authorities = {"vet"})
     @Test
     void unsuccessfullTestInitCreationForm() throws Exception {
-    		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
-	    .andExpect(status().is(HttpStatus.FORBIDDEN.value()));
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
+	    	.andExpect(status().is(HttpStatus.FORBIDDEN.value()));
     }
 	
 	@WithMockUser(username ="SomeRandomOwner",authorities = {"owner"})
     @Test
     void testInitCreationForm() throws Exception {
-		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID)).andExpect(status().isOk())
-			.andExpect(view().name("pets/createOrUpdatePetForm")).andExpect(model().attributeExists("pet"));
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", TEST_OWNER_ID))
+				.andExpect(status().isOk())
+				.andExpect(view().name("pets/createOrUpdatePetForm")).andExpect(model().attributeExists("pet"));
 	}
 }
 

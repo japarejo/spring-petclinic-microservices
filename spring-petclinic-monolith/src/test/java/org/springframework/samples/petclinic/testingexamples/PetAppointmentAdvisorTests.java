@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.samples.petclinic.testingexamples.PetAppointmentAdvisor.AppointmentType;
@@ -63,6 +64,7 @@ class PetAppointmentAdvisorTests {
 	}
 
 	@ParameterizedTest(name = "{index}: {0}, {1} anios y sintoma \"{2}\" -> {3}")
+	//@CsvSource(value={"Rufo,20,no come, SAME_DAY"})
 	@CsvFileSource(resources = "/testingexamples/appointment-classification-scenarios.csv", numLinesToSkip = 1)
 	@DisplayName("Clasificacion parametrizada de citas")
 	void shouldClassifyDifferentAppointmentScenarios(String petName, int age, String symptom,

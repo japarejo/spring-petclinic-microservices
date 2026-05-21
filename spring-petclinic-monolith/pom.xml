@@ -27,8 +27,22 @@
 		<hystrix.version>2.2.8.RELEASE</hystrix.version>
 		<jacoco.version>0.8.12</jacoco.version>
 		<maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+		<maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
 		<maven-surefire-report-plugin.version>3.5.2</maven-surefire-report-plugin.version>
+		<testcontainers.version>2.0.5</testcontainers.version>
     </properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>${testcontainers.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
     <dependencies>
         <!-- Spring and Spring Boot dependencies -->
@@ -180,6 +194,21 @@
             </exclusions>
         </dependency>                
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-mysql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
 			<scope>test</scope>
@@ -203,6 +232,23 @@
 					<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
 					<useFile>true</useFile>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven-failsafe-plugin.version}</version>
+				<configuration>
+					<reportsDirectory>${project.build.directory}/failsafe-reports</reportsDirectory>
+					<useFile>true</useFile>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>

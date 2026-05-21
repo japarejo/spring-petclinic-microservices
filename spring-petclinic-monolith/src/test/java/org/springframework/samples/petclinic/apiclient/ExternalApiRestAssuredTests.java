@@ -10,6 +10,7 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @Tag("external-api")
@@ -29,6 +30,20 @@ class ExternalApiRestAssuredTests {
 			.body("id", equalTo(25))
 			.body("name", equalTo("pikachu"))
 			.body("types.type.name", hasItem("electric"));
+	}
+
+
+	@Test
+	void lukeEsRubio(){
+		Response response = getOrSkip("https://swapi.info/api/people/1");
+
+		response.then().assertThat()
+				.statusCode(200)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+
+				.body("name", equalTo("Luke Skywalker"))
+				.body("height", equalTo("172"))
+				.body("birth_year", equalTo("19BBY"));
 	}
 
 	private Response getOrSkip(String url) {
