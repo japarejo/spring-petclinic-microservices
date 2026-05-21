@@ -113,7 +113,7 @@ Puntos a explicar:
 - `@Testcontainers` activa la extension de JUnit 5.
 - `disabledWithoutDocker = true` evita que la suite completa falle en maquinas donde Docker no esta arrancado.
 - `@Container` marca el contenedor que debe arrancarse para el test.
-- `MySQLContainer` conoce como arrancar MySQL y como detectar que esta listo.
+- `org.testcontainers.mysql.MySQLContainer` conoce como arrancar MySQL y como detectar que esta listo.
 - `@ServiceConnection` es integracion de Spring Boot: toma host, puerto, usuario y password del contenedor y configura el `DataSource`.
 - No se escribe `spring.datasource.url` a mano porque el puerto es dinamico.
 
@@ -122,7 +122,7 @@ Fragmento importante:
 ```java
 @Container
 @ServiceConnection
-static final MySQLContainer<?> mysql = new MySQLContainer<>(MYSQL_IMAGE)
+static final MySQLContainer mysql = new MySQLContainer(MYSQL_IMAGE)
     .withDatabaseName("petclinic")
     .withUsername("petclinic")
     .withPassword("petclinic");
