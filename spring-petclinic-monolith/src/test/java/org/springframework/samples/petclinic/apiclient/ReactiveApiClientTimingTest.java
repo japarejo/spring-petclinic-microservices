@@ -83,11 +83,15 @@ class ReactiveApiClientTimingTest {
 	}
 
 	private Flux<Bill> fetchSequentially(List<Integer> ids) {
+
 		return Flux.fromIterable(ids).concatMap(this::getBill);
+
 	}
 
 	private Flux<Bill> fetchInParallel(List<Integer> ids) {
+
 		return Flux.fromIterable(ids).flatMap(this::getBill, CALLS);
+
 	}
 
 	private Mono<Bill> getBill(Integer id) {

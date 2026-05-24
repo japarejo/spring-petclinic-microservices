@@ -19,7 +19,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>		
 		<!--  Spring cloud -->
-		<spring-cloud.version>2024.0.0</spring-cloud.version>		
+		<spring-cloud.version>2024.0.0</spring-cloud.version>
+		<spring-boot-admin.version>3.4.5</spring-boot-admin.version>
 		<!--  Other libraries -->
 		<lombok.version>1.18.32</lombok.version>		
 		<!--org.mapstruct.version>1.6.2</!org.mapstruct.version-->	

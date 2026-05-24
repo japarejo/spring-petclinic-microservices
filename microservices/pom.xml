@@ -14,7 +14,8 @@
 	<packaging>pom</packaging>
 	<name>microservices</name>
 	<modules>
-		<!-- >module>registry</module -->
+		<module>registry</module>
+		<module>admin-server</module>
 		<module>microservice-chasis</module>
 		<!-- module>hexagonal-microservice-chasis</module-->
 		<module>security-microservice</module>

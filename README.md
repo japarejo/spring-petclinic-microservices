@@ -55,10 +55,12 @@ The microservices expose OpenAPI documentation at `/doc` and the Swagger UI at `
 Configured service ports in this repository include:
 
 - `microservices/billsmicroservice` — port `8040`
+- `microservices/registry` — port `8761`
+- `microservices/configuration-server` — port `8889`
+- `microservices/admin-server` — port `9090`
 - `microservices/security-microservice` — port `8060`
 - `microservices/vademecum-microservice` — port `8071`
 - `microservices/microservice-chasis` — port `8071`
-- `microservices/configuration-server` — port `8888`
 
 Example requests:
 
@@ -69,6 +71,41 @@ curl http://localhost:8040/api/v1/bills/whoami/john
 ```
 
 Each service publishes its OpenAPI JSON at `/doc` and its Swagger UI at `/`.
+
+## Configurability, service registry and admin dashboard
+
+This repository includes a classroom demo for Spring Cloud Config, Eureka and Spring Boot Admin:
+
+- `microservices/registry`: Eureka registry at <http://localhost:8761>.
+- `microservices/configuration-server`: Config Server at <http://localhost:8889>.
+- `microservices/admin-server`: Spring Boot Admin at <http://localhost:9090>.
+- `microservices/billsmicroservice`: sample client registered in Eureka and configured from Config Server.
+
+Spring Cloud Config is often shown on port `8888`; this repo uses `8889` to avoid common Windows port conflicts.
+
+Run the complete demo with Docker Compose:
+
+```
+docker compose up --build
+```
+
+Or run the modules manually in this order:
+
+```
+./mvnw -pl microservices/registry spring-boot:run
+./mvnw -pl microservices/configuration-server spring-boot:run
+./mvnw -pl microservices/admin-server spring-boot:run
+./mvnw -pl microservices/billsmicroservice spring-boot:run
+```
+
+Useful checks:
+
+```
+curl http://localhost:8889/bills-microservice/development
+curl http://localhost:8040/api/v1/bills/whoami/alumno
+```
+
+The class script is available at [docs/configurabilidad-spring-boot-guion.md](docs/configurabilidad-spring-boot-guion.md).
 
 ### Microservice OpenAPI configuration
 

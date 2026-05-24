@@ -1,12 +1,116 @@
-mysql:
-  image: mysql:5.7
-  ports:
-    - "3306:3306"
-  environment:
-    - MYSQL_ROOT_PASSWORD=
-    - MYSQL_ALLOW_EMPTY_PASSWORD=true
-    - MYSQL_USER=petclinic
-    - MYSQL_PASSWORD=petclinic
-    - MYSQL_DATABASE=petclinic
-  volumes:
-    - "./conf.d:/etc/mysql/conf.d:ro"
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_USER: petclinic
+      MYSQL_PASSWORD: petclinic
+      MYSQL_DATABASE: petclinic
+    volumes:
+      - "./conf.d:/etc/mysql/conf.d:ro"
+
+  registry:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.springboot
+      args:
+        MODULE: microservices/registry
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8761/actuator/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  config-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.springboot
+      args:
+        MODULE: microservices/configuration-server
+    environment:
+      EUREKA_URI: http://registry:8761/eureka
+      SPRING_PROFILES_ACTIVE: native
+    ports:
+      - "8889:8889"
+    depends_on:
+      registry:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8889/actuator/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  admin-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.springboot
+      args:
+        MODULE: microservices/admin-server
+    environment:
+      EUREKA_URI: http://registry:8761/eureka
+    ports:
+      - "9090:9090"
+    depends_on:
+      registry:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9090/actuator/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  bills-microservice:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.springboot
+      args:
+        MODULE: microservices/billsmicroservice
+    environment:
+      EUREKA_URI: http://registry:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8889
+    ports:
+      - "8040:8040"
+    depends_on:
+      registry:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8040/actuator/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  bills-microservice-2:
+    profiles:
+      - scale-demo
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.springboot
+      args:
+        MODULE: microservices/billsmicroservice
+    environment:
+      EUREKA_URI: http://registry:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8889
+      EUREKA_INSTANCE_METADATA_MAP_INSTANCE_NUMBER: "2"
+    depends_on:
+      registry:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8040/actuator/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
