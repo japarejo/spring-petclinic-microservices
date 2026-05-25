@@ -58,7 +58,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/**").permitAll()
 
                 /* rutas que exigen autenticación ------------------------------------------*/
-                .requestMatchers("/service-instances/*").authenticated()
+                .requestMatchers("/service-instances/*").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
 
                 /* cualquier otra URL se deniega ------------------------------------------*/
