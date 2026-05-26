@@ -1,6 +1,26 @@
-mkdir config-repo
-cd config-repo
+@echo off
+set "CONFIG_REPO=C:\config-repo"
+
+if not exist "%CONFIG_REPO%" mkdir "%CONFIG_REPO%"
+cd /d "%CONFIG_REPO%"
+
 git init .
-echo info.foo: bar > application.properties
-git add -A .
-git commit -m "Add application.properties"
+git checkout -B main
+git config user.name "Petclinic Config Demo"
+git config user.email "petclinic-config-demo@example.com"
+
+echo info.lesson=configuration> application.properties
+echo info.config.repository=file:///c:/config-repo>> application.properties
+
+echo info.config.application=bills-microservice> bills-microservice.properties
+
+echo user.role=Developer from Spring Cloud Config on Git> bills-microservice-development.properties
+echo billing.demo.discount-percent=10>> bills-microservice-development.properties
+echo info.config.source=config-server-git-repository>> bills-microservice-development.properties
+
+echo user.role=Student from classroom profile> bills-microservice-classroom.properties
+echo billing.demo.discount-percent=5>> bills-microservice-classroom.properties
+echo info.config.source=config-server-git-classroom-profile>> bills-microservice-classroom.properties
+
+git add -A
+git diff --cached --quiet || git commit -m "Add Petclinic configuration files"

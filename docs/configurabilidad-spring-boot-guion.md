@@ -221,6 +221,95 @@ Resultado esperado:
 user.role=Developer from Spring Cloud Config
 ```
 
+### Variante: servir configuracion desde un repositorio Git
+
+La demo anterior usa `native` porque es la forma mas rapida de entender el mecanismo: el Config Server lee ficheros que ya van dentro del proyecto. En un escenario mas realista, esos ficheros no deberian vivir dentro del jar del Config Server, sino en un repositorio externo.
+
+Idea:
+
+```text
+Git repo de configuracion -> Config Server -> microservicios clientes
+```
+
+Por que es interesante:
+
+- Permite cambiar configuracion sin recompilar ni redistribuir los microservicios.
+- Da historial, diff, autoria y rollback con Git.
+- Separa el binario de la aplicacion de las decisiones de entorno.
+- Evita copiar el mismo `application.properties` en muchos servicios.
+- Facilita tener configuracion distinta por aplicacion y perfil: `bills-microservice-development.properties`, `bills-microservice-classroom.properties`, etc.
+
+En este repo hay un script preparado para crear un repositorio Git local con los ficheros del ejemplo:
+
+```text
+microservices/configuration-server/src/main/resources/repo-initialization-script.txt
+```
+
+Ejecutalo en una terminal de Windows. Creara:
+
+```text
+C:\config-repo
+```
+
+con estos ficheros:
+
+```text
+application.properties
+bills-microservice.properties
+bills-microservice-development.properties
+bills-microservice-classroom.properties
+```
+
+Para que el Config Server lea desde ese repositorio, cambia en:
+
+```text
+microservices/configuration-server/src/main/resources/application.properties
+```
+
+de:
+
+```properties
+spring.profiles.active=native
+spring.cloud.config.server.native.search-locations=classpath:/config-repo
+```
+
+a:
+
+```properties
+spring.profiles.active=git
+# spring.cloud.config.server.native.search-locations=classpath:/config-repo
+spring.cloud.config.server.git.uri=file:///c:/config-repo
+spring.cloud.config.server.git.clone-on-start=true
+spring.cloud.config.server.git.default-label=main
+```
+
+Si se usa Docker, recuerda que `docker-compose.yml` puede pisar el perfil activo con una variable de entorno. Para probar esta variante, cambia el servicio `config-server`:
+
+```yaml
+environment:
+  EUREKA_URI: http://registry:8761/eureka
+  SPRING_PROFILES_ACTIVE: git
+```
+
+Comprobacion:
+
+```powershell
+.\mvnw.cmd -pl microservices/configuration-server spring-boot:run
+curl http://localhost:8889/bills-microservice/development
+curl http://localhost:8889/bills-microservice/classroom
+```
+
+Resultado esperado:
+
+```text
+development -> user.role=Developer from Spring Cloud Config
+classroom   -> user.role=Student from classroom profile
+```
+
+Mensaje didactico:
+
+> El Config Server no es interesante porque "tenga properties". Es interesante porque convierte la configuracion en una fuente centralizada, versionada y consultable por todos los servicios al arrancar.
+
 ### 55-65 min: descanso
 
 Deja visible el JSON del Config Server. Al volver, empieza preguntando:
