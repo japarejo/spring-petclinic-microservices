@@ -4,13 +4,18 @@ ARG MODULE
 WORKDIR /workspace
 
 COPY . .
-RUN sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw && ./mvnw -pl ${MODULE} -am package -DskipTests
+RUN sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw && ./mvnw -pl ${MODULE} -am clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
 
 ARG MODULE
 WORKDIR /app
-COPY --from=build /workspace/${MODULE}/target/*.jar app.jar
+COPY --from=build /workspace/${MODULE}/target /tmp/target
+COPY --from=build /workspace/${MODULE}/src/main /tmp/srcmain
+RUN artifact="$(find /tmp/target -maxdepth 1 \( -name '*.jar' -o -name '*.war' \) ! -name '*.original' | head -n 1)" \
+    && cp "${artifact}" app.jar \
+    && if [ -d /tmp/srcmain/webapp ]; then cp -R /tmp/srcmain/webapp /app/webapp; fi \
+    && rm -rf /tmp/target /tmp/srcmain
 
-EXPOSE 8040 8761 8889 9090
+EXPOSE 8040 8761 8889 9090 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
