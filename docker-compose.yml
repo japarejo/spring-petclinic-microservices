@@ -12,6 +12,7 @@ services:
       MYSQL_PASSWORD: petclinic
       MYSQL_DATABASE: petclinic
     volumes:
+      - mysql-data:/var/lib/mysql
       - "./conf.d:/etc/mysql/conf.d:ro"
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u petclinic --password=petclinic --silent"]
@@ -19,6 +20,20 @@ services:
       timeout: 5s
       retries: 12
       start_period: 30s
+
+  mysql-init:
+    image: mysql:5.7
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - "./docker/mysql:/sql:ro"
+    command: >
+      sh -c "
+        mysql -h mysql -u petclinic --password=petclinic petclinic < /sql/01-schema.sql &&
+        mysql -h mysql -u petclinic --password=petclinic petclinic < /sql/02-data.sql &&
+        mysql -h mysql -u petclinic --password=petclinic petclinic -e \"SELECT username FROM users WHERE username = 'admin1'\"
+      "
 
   registry:
     build:
@@ -116,6 +131,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      mysql-init:
+        condition: service_completed_successfully
       registry:
         condition: service_healthy
     healthcheck:
@@ -124,3 +141,6 @@ services:
       timeout: 5s
       retries: 12
       start_period: 30s
+
+volumes:
+  mysql-data:
