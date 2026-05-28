@@ -1,6 +1,8 @@
 services:
   mysql:
-    image: mysql:5.7
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mysql
     ports:
       - "3306:3306"
     environment:
@@ -11,6 +13,12 @@ services:
       MYSQL_DATABASE: petclinic
     volumes:
       - "./conf.d:/etc/mysql/conf.d:ro"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u petclinic --password=petclinic --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
   registry:
     build:
@@ -91,25 +99,27 @@ services:
       retries: 12
       start_period: 30s
 
-  bills-microservice-2:
-    profiles:
-      - scale-demo
+  monolith:
     build:
       context: .
       dockerfile: docker/Dockerfile.springboot
       args:
-        MODULE: microservices/billsmicroservice
+        MODULE: spring-petclinic-monolith
     environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/petclinic
+      SPRING_DATASOURCE_USERNAME: petclinic
+      SPRING_DATASOURCE_PASSWORD: petclinic
       EUREKA_URI: http://registry:8761/eureka
-      CONFIG_SERVER_URI: http://config-server:8889
-      EUREKA_INSTANCE_METADATA_MAP_INSTANCE_NUMBER: "2"
+    ports:
+      - "8080:8080"
     depends_on:
+      mysql:
+        condition: service_healthy
       registry:
         condition: service_healthy
-      config-server:
-        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8040/actuator/health > /dev/null || exit 1"]
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health > /dev/null || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 12

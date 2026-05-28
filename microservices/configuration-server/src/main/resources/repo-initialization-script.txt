@@ -18,7 +18,7 @@ echo user.role=Developer from Spring Cloud Config on Git> bills-microservice-dev
 echo billing.demo.discount-percent=10>> bills-microservice-development.properties
 echo info.config.source=config-server-git-repository>> bills-microservice-development.properties
 
-echo user.role=Student from classroom profile> bills-microservice-classroom.properties
+echo user.role=Student from classroom profile on git> bills-microservice-classroom.properties
 echo billing.demo.discount-percent=5>> bills-microservice-classroom.properties
 echo info.config.source=config-server-git-classroom-profile>> bills-microservice-classroom.properties
 

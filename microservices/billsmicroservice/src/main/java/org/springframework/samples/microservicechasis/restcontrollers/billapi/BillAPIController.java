@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Tag(name = "Bills", description = "Billing REST API for invoices and billing operations")
 @RestController
+@RefreshScope
 @RequestMapping("/api/v1/bills")
 public class BillAPIController {
 

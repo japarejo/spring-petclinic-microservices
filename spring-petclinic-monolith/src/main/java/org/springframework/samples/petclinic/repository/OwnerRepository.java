@@ -18,6 +18,7 @@ package org.springframework.samples.petclinic.repository;
 import java.util.Collection;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
@@ -56,8 +57,12 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 * @param id the id to search for
 	 * @return the <code>Owner</code> if found
 	 * @throws org.springframework.dao.DataRetrievalFailureException if not found
-	 */	
-	@Query("SELECT owner FROM Owner owner left join fetch owner.pets WHERE owner.id =:id")
+	 */
+	/*@EntityGraph(attributePaths = {
+    	"pets",
+    	"pets.visits"
+	})*/	
+	//@Query("SELECT owner FROM Owner owner left join fetch owner.pets WHERE owner.id =:id")
 	public Owner findById(@Param("id") int id);
 
 	@Query("SELECT owner FROM Owner owner WHERE owner.user.username =:username")

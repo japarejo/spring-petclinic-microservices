@@ -1,0 +1,4 @@
+FROM mysql:5.7
+
+COPY docker/mysql/01-schema.sql /docker-entrypoint-initdb.d/01-schema.sql
+COPY docker/mysql/02-data.sql /docker-entrypoint-initdb.d/02-data.sql
