@@ -33,6 +33,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -57,7 +58,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Table(name = "pets")
 public class Pet extends NamedEntity {
 
-	@Column(name = "birth_date")        
+	@Column(name = "birth_date")
+	@NotNull
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
 	private LocalDate birthDate;
@@ -79,7 +81,7 @@ public class Pet extends NamedEntity {
 	private Owner owner;
 
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER, orphanRemoval = true)
 	private Set<Visit> visits;
 
 	public void setBirthDate(LocalDate birthDate) {
@@ -126,6 +128,11 @@ public class Pet extends NamedEntity {
 	public void addVisit(Visit visit) {
 		getVisitsInternal().add(visit);
 		visit.setPet(this);
+	}
+
+	public void removeVisit(Visit visit) {
+		getVisitsInternal().remove(visit);
+		visit.setPet(null);
 	}
 
 }

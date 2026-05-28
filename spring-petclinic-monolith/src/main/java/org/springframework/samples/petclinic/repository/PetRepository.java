@@ -47,7 +47,7 @@ public interface PetRepository extends Repository<Pet, Integer>, JpaSpecificatio
 	 * @return the <code>Pet</code> if found
 	 * @throws org.springframework.dao.DataRetrievalFailureException if not found
 	 */
-	Pet findById(int id) throws DataAccessException;
+	Pet findById(int id)  throws DataAccessException;
 
 	/**
 	 * Save a <code>Pet</code> to the data store, either inserting or updating it.

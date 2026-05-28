@@ -22,4 +22,23 @@ public class EntityManagerTest {
         assertNotNull(mipana);
         assertEquals(mipana.getFirstName(),"George");
     }
+
+    @Test
+    public void emTest2(){
+        Owner yo=new Owner();
+        yo.setFirstName("José Antonio");
+        yo.setLastName("Apellidos");
+        yo.setCity("Tattoine");
+        yo.setAddress("Casa del Tio Ben, choza 3");
+        yo.setTelephone("66666666");
+        em.persist(yo);
+        Owner mipana=em.find(Owner.class,1);
+        assertNotNull(mipana);
+        assertEquals(mipana.getFirstName(),"George");
+        assertNotNull(yo.getId());
+        yo.setCity("Death Star");
+        em.persist(yo);
+        em.flush();
+    }
+
 }
