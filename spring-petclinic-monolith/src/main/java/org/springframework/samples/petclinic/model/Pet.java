@@ -81,7 +81,7 @@ public class Pet extends NamedEntity {
 	private Owner owner;
 
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", orphanRemoval = true)
 	private Set<Visit> visits;
 
 	public void setBirthDate(LocalDate birthDate) {

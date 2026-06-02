@@ -78,6 +78,9 @@ public class OwnerService {
 		//creating owner
 		ownerRepository.save(owner);		
 		//creating user
+		if ("ROLLBACK".equals(owner.getLastName())) {
+			throw new IllegalStateException("Fallo didactico despues de guardar owner");
+		}
 		userService.saveUser(owner.getUser());
 		//creating authorities
 		authoritiesService.saveAuthorities(owner.getUser().getUsername(), "owner");

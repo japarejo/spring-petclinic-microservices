@@ -52,6 +52,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/users/new").permitAll()
                 .requestMatchers("/logging", "/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/datarest/**").permitAll()
                 .requestMatchers("/admin/**").hasAuthority("admin")
                 .requestMatchers("/owners/**").hasAnyAuthority("owner", "admin")
                 .requestMatchers("/vets/**", "/diseases/**", "/payments/**", "/bills/**").authenticated()
@@ -77,7 +78,8 @@ public class SecurityConfiguration {
                 .ignoringRequestMatchers(
                     "/h2-console/**",
                     "/actuator/**",
-                    "/api/**"
+                    "/api/**",
+                    "/datarest/**"
                 )
             )
 
@@ -104,8 +106,8 @@ public class SecurityConfiguration {
     @Bean
     PasswordEncoder passwordEncoder() {
         //  ¡NoOp solo para entornos de demo/docencia!
-        //return NoOpPasswordEncoder.getInstance();
-        return new BCryptPasswordEncoder();
+        return NoOpPasswordEncoder.getInstance();
+        //return new BCryptPasswordEncoder();
     }
 }
 
